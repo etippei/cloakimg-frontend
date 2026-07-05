@@ -252,7 +252,7 @@ function renderAuthWidget() {
     }
 }
 
-// ---------- 认证弹窗 ----------
+// ---------- 认证弹窗（注册成功显示清晰提示） ----------
 function openAuthModal(mode) {
     const modal = document.createElement('div');
     modal.style.cssText = `
@@ -313,25 +313,63 @@ function openAuthModal(mode) {
         const email = modal.querySelector('#authEmail').value;
         const password = modal.querySelector('#authPassword').value;
         const messageEl = modal.querySelector('#authMessage');
+        const submitBtn = modal.querySelector('button[type="submit"]');
         
         try {
             if (isLogin) {
+                // ===== 登录 =====
                 const result = await login(email, password);
-                messageEl.textContent = '✅ Login successful!';
+                messageEl.innerHTML = '✅ Login successful!';
                 messageEl.style.color = '#22c55e';
                 setTimeout(() => {
                     modal.remove();
                     window.location.reload();
                 }, 1000);
             } else {
+                // ===== 注册 =====
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating account...';
+                
                 const result = await register(email, password);
-                messageEl.textContent = '✅ Account created! Please check your email to verify.';
-                messageEl.style.color = '#22c55e';
-                setTimeout(() => modal.remove(), 3000);
+                
+                // 注册成功 - 显示清晰的提示，引导用户去邮箱验证
+                messageEl.innerHTML = `
+                    <div style="background: #dbeafe; border-radius: 12px; padding: 14px; text-align: left;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                            <span style="font-size: 1.5rem;">📧</span>
+                            <span style="font-weight: 600; color: #1e40af;">Verification email sent!</span>
+                        </div>
+                        <p style="color: #1e3a5f; font-size: 0.85rem; margin: 4px 0;">
+                            We've sent a verification link to <strong>${email}</strong>.
+                        </p>
+                        <p style="color: #1e3a5f; font-size: 0.8rem; margin: 4px 0;">
+                            ⏳ Please check your inbox and click the link to activate your account.
+                        </p>
+                        <p style="color: #6b7280; font-size: 0.75rem; margin: 8px 0 0 0;">
+                            💡 Didn't see the email? Check your <strong>Spam</strong> folder.
+                        </p>
+                    </div>
+                `;
+                messageEl.style.color = '#1e40af';
+                
+                // 重置按钮状态
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Create Account';
+                
+                // 8秒后自动关闭弹窗
+                setTimeout(() => {
+                    if (document.body.contains(modal)) {
+                        modal.remove();
+                    }
+                }, 8000);
             }
         } catch (error) {
-            messageEl.textContent = error.message || (isLogin ? 'Login failed' : 'Registration failed');
+            messageEl.innerHTML = `❌ ${error.message || (isLogin ? 'Login failed' : 'Registration failed')}`;
             messageEl.style.color = '#ef4444';
+            if (!isLogin) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Create Account';
+            }
         }
     });
 }
