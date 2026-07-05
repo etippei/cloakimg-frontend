@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ===== 导航栏字体放大 ===== */
         .nav-link {
             font-size: 1.15rem !important;
             font-weight: 600 !important;
@@ -21,7 +20,6 @@
             .nav-link { font-size: 0.8rem !important; padding: 0.3rem 0.6rem !important; }
         }
 
-        /* ===== 色彩优化 ===== */
         .hero {
             background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 50%, #ede9fe 100%) !important;
         }
@@ -29,7 +27,6 @@
             border-left: 4px solid #2563eb;
             transition: all 0.3s;
         }
-        /* 第一个卡片（ID Photo）用金色/橙色突出显示 */
         .tool-card:first-child {
             border-left-color: #f59e0b;
             background: linear-gradient(145deg, #fffbeb, #ffffff);
@@ -43,13 +40,12 @@
             border-color: #f59e0b;
             color: #92400e;
         }
-        /* 其他卡片颜色 */
         .tool-card:nth-child(2) { border-left-color: #2563eb; }
         .tool-card:nth-child(3) { border-left-color: #8b5cf6; }
         .tool-card:nth-child(4) { border-left-color: #059669; }
         .tool-card:nth-child(5) { border-left-color: #d97706; }
         .tool-card:nth-child(6) { border-left-color: #dc2626; }
-
+        
         .tool-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 28px rgba(0,0,0,0.08);
@@ -106,6 +102,10 @@
         .user-greeting {
             background: linear-gradient(135deg, #eef2ff, #ede9fe) !important;
         }
+        footer {
+            background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+            border-top: 1px solid #e2e8f0;
+        }
         .hot-badge {
             background: #f59e0b;
             color: white;
@@ -136,6 +136,7 @@
             <a href="help.html" class="nav-link">❓ Help</a>
             <a href="contact.html" class="nav-link">📧 Contact</a>
             <a href="pricing.html" class="nav-link">💰 Pricing</a>
+            <a href="account.html" class="nav-link">👤 Account</a>
         </div>
         <div class="auth-area" id="authWidget"></div>
     </header>
@@ -168,13 +169,28 @@
         <a href="pricing.html" class="btn btn-primary" style="padding:0.8rem 2.5rem; font-size:1.05rem;">View All Plans →</a>
     </div>
 
-    <!-- ====== 页脚已删除 ====== -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left">
+                <i class="fas fa-microchip"></i> ImageForge AI — Professional upscaling & editing suite.
+            </div>
+            <div class="footer-right">
+                <a href="pricing.html">Pricing</a>
+                <a href="contact.html">Contact</a>
+                <a href="help.html">Help</a>
+                <a href="blog.html">Blog</a>
+                <a href="account.html">Account</a>
+                <a href="#" onclick="window.ForgeAuth?.openAuthModal ? window.ForgeAuth.openAuthModal('login') : alert('Please refresh'); return false;">Sign In</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 ImageForge AI. All rights reserved.</div>
+    </footer>
 </div>
 
 <script src="common.js"></script>
 <script>
     // ============================================
-    // Tools Data — ID Photo 排第一位
+    // Tools Data
     // ============================================
     const tools = [
         {
@@ -186,7 +202,6 @@
             route: 'tools/id-photo.html',
             freeLimit: '3/day, Standard',
             proLimit: 'Unlimited, Premium HD',
-            isNew: true,
             isHot: true
         },
         {
@@ -248,20 +263,17 @@
     function renderTools() {
         const container = document.getElementById('toolsGrid');
         const user = JSON.parse(localStorage.getItem('forge_user'));
-
+        
         if (container) {
             container.innerHTML = tools.map((tool, index) => {
-                const hotBadge = (index === 0 && tool.isHot)
-                    ? '<span class="hot-badge">🔥 Hot</span>'
+                const hotBadge = (index === 0 && tool.isHot) 
+                    ? '<span class="hot-badge">🔥 Hot</span>' 
                     : '';
-                const newBadge = (index === 0 && tool.isNew)
-                    ? '<span class="hot-badge" style="background:#2563eb;">New</span>'
-                    : '';
-
+                
                 return `
                 <div class="tool-card" data-tool="${tool.id}">
                     <div class="tool-icon"><i class="fas ${tool.icon}"></i></div>
-                    <h3>${tool.name} ${hotBadge} ${newBadge}</h3>
+                    <h3>${tool.name} ${hotBadge}</h3>
                     <div class="tool-desc">${tool.desc}</div>
                     <div class="tech-badge">⚙️ ${tool.tech}</div>
                     <div class="limit-badge" style="margin-top:8px;">
@@ -288,9 +300,12 @@
                 if (user) {
                     authWidget.innerHTML = `
                         <div class="user-greeting">
-                            <i class="fas fa-user-circle"></i> ${user.email.split('@')[0]}
+                            <i class="fas fa-user-circle"></i> ${user.email.split('@')[0]} 
                             <span class="plan-badge">${user.plan === 'pro' ? 'PRO ⭐' : 'FREE'}</span>
                         </div>
+                        <a href="account.html" class="btn btn-ghost" style="text-decoration:none;">
+                            <i class="fas fa-user"></i> Account
+                        </a>
                         <button class="btn btn-ghost" onclick="localStorage.removeItem('forge_user');localStorage.removeItem('forge_token');location.reload();">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -307,7 +322,7 @@
                 }
             }
         }
-
+        
         renderTools();
     });
 </script>

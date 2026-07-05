@@ -2,7 +2,10 @@
 // 前端公共JS - 包含认证、API调用、使用统计
 // ============================================
 
-const API_BASE =  'https://imageforge-api.etiplpl.workers.dev/api';
+// ============================================
+// API配置 - 指向 Cloudflare Worker
+// ============================================
+const API_BASE = 'https://imageforge-api.etiplpl.workers.dev/api';
 
 // ---------- 用户认证 ----------
 async function apiRequest(endpoint, options = {}) {
@@ -64,6 +67,13 @@ async function resetPassword(token, newPassword) {
     return await apiRequest('/auth/reset-password', {
         method: 'POST',
         body: { token, newPassword }
+    });
+}
+
+async function changePassword(currentPassword, newPassword) {
+    return await apiRequest('/auth/change-password', {
+        method: 'POST',
+        body: { current_password: currentPassword, new_password: newPassword }
     });
 }
 
@@ -141,7 +151,8 @@ function getToolDisplayName(toolType) {
         'rembg': 'Background Remover',
         'compressor': 'Compressor',
         'convert': 'PNG to JPG',
-        'resize': 'Resize'
+        'resize': 'Resize',
+        'idphoto': 'ID Photo Maker'
     };
     return map[toolType] || toolType;
 }
@@ -198,7 +209,7 @@ function displayUsageInfo(containerId, toolType) {
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 0.75rem; color: #64748b;">
                         <span>${remaining} remaining today</span>
-                        ${remaining === 0 ? '<a href="#pricing" style="color: #2563eb; font-weight: 600;">Upgrade to Pro →</a>' : ''}
+                        ${remaining === 0 ? '<a href="pricing.html" style="color: #2563eb; font-weight: 600;">Upgrade to Pro →</a>' : ''}
                     </div>
                 ` : ''}
             </div>
@@ -215,13 +226,9 @@ function displayUsageInfo(containerId, toolType) {
 // ---------- 渲染登录状态UI ----------
 function renderAuthWidget() {
     const widget = document.getElementById('authWidget');
-    if (!widget) {
-        console.warn('Auth widget container not found');
-        return;
-    }
+    if (!widget) return;
     
     const user = JSON.parse(localStorage.getItem('forge_user'));
-    
     if (user) {
         const planLabel = user.plan === 'pro' ? 'PRO ⭐' : 'FREE';
         widget.innerHTML = `
@@ -229,39 +236,25 @@ function renderAuthWidget() {
                 <i class="fas fa-user-circle"></i> ${user.email.split('@')[0]} 
                 <span class="plan-badge">${planLabel}</span>
             </div>
-            <button class="btn btn-outline" id="upgradePlanBtn"><i class="fas fa-gem"></i> Upgrade</button>
+            <a href="account.html" class="btn btn-ghost" style="text-decoration:none;">
+                <i class="fas fa-user"></i> Account
+            </a>
             <button class="btn btn-ghost" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
         `;
-        document.getElementById('logoutBtn')?.addEventListener('click', function() {
-            localStorage.removeItem('forge_token');
-            localStorage.removeItem('forge_user');
-            window.location.reload();
-        });
-        document.getElementById('upgradePlanBtn')?.addEventListener('click', function() {
-            document.getElementById('pricingSection')?.scrollIntoView({ behavior: 'smooth' });
-        });
+        document.getElementById('logoutBtn')?.addEventListener('click', logout);
     } else {
         widget.innerHTML = `
             <button class="btn btn-outline" id="loginBtn"><i class="fas fa-key"></i> Sign in</button>
             <button class="btn btn-primary" id="signupBtn"><i class="fas fa-user-plus"></i> Get started</button>
         `;
-        document.getElementById('loginBtn')?.addEventListener('click', function() {
-            openAuthModal('login');
-        });
-        document.getElementById('signupBtn')?.addEventListener('click', function() {
-            openAuthModal('signup');
-        });
+        document.getElementById('loginBtn')?.addEventListener('click', () => openAuthModal('login'));
+        document.getElementById('signupBtn')?.addEventListener('click', () => openAuthModal('signup'));
     }
 }
 
 // ---------- 认证弹窗 ----------
 function openAuthModal(mode) {
-    // 移除已有弹窗
-    const existingModal = document.querySelector('.auth-modal-overlay');
-    if (existingModal) existingModal.remove();
-    
     const modal = document.createElement('div');
-    modal.className = 'auth-modal-overlay';
     modal.style.cssText = `
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
@@ -287,10 +280,10 @@ function openAuthModal(mode) {
                 </div>
                 ${isLogin ? `
                     <div style="text-align: right; margin-bottom: 16px;">
-                        <a href="#" id="forgotPasswordLink" style="font-size: 0.8rem; color: #2563eb; text-decoration: none;">Forgot password?</a>
+                        <a href="forgot-password.html" style="font-size: 0.8rem; color: #2563eb; text-decoration: none; font-weight: 500;">Forgot password?</a>
                     </div>
                 ` : ''}
-                <button type="submit" style="width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 40px; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                <button type="submit" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; border: none; border-radius: 40px; font-size: 1rem; font-weight: 600; cursor: pointer;">
                     ${isLogin ? 'Sign In' : 'Create Account'}
                 </button>
                 <div style="text-align: center; margin-top: 16px; font-size: 0.85rem; color: #64748b;">
@@ -313,24 +306,6 @@ function openAuthModal(mode) {
         e.preventDefault();
         modal.remove();
         openAuthModal(isLogin ? 'signup' : 'login');
-    });
-    
-    modal.querySelector('#forgotPasswordLink')?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const email = modal.querySelector('#authEmail').value;
-        if (!email || !email.includes('@')) {
-            modal.querySelector('#authMessage').textContent = 'Please enter your email address.';
-            modal.querySelector('#authMessage').style.color = '#ef4444';
-            return;
-        }
-        try {
-            const result = await forgotPassword(email);
-            modal.querySelector('#authMessage').textContent = result.message || 'Reset link sent! Check your email.';
-            modal.querySelector('#authMessage').style.color = '#22c55e';
-        } catch (error) {
-            modal.querySelector('#authMessage').textContent = error.message || 'Failed to send reset link.';
-            modal.querySelector('#authMessage').style.color = '#ef4444';
-        }
     });
     
     modal.querySelector('#authForm').addEventListener('submit', async (e) => {
@@ -361,11 +336,6 @@ function openAuthModal(mode) {
     });
 }
 
-// ---------- 初始化认证组件 ----------
-function initAuth() {
-    renderAuthWidget();
-}
-
 // ---------- 全局暴露 ----------
 window.ForgeAuth = {
     login,
@@ -373,13 +343,13 @@ window.ForgeAuth = {
     logout,
     forgotPassword,
     resetPassword,
+    changePassword,
     getUsage,
     uploadToVPS,
     pollResult,
     displayUsageInfo,
     openAuthModal,
     renderAuthWidget,
-    initAuth,
     formatFileSize,
     downloadBase64,
     getToolDisplayName,
@@ -390,13 +360,7 @@ window.ForgeAuth = {
 // 页面加载时自动初始化
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
-    // 渲染认证组件
-    renderAuthWidget();
+    if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
+        window.ForgeAuth.renderAuthWidget();
+    }
 });
-
-// 如果页面已经加载完成（DOMContentLoaded已触发），立即执行
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderAuthWidget);
-} else {
-    renderAuthWidget();
-}
