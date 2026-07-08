@@ -3,31 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Upscaler - ImageForge</title>
+    <title>AI Image Upscaler - CloakImg AI | Free AI Image Enlarger</title>
+    <meta name="description" content="Free online AI image upscaler. Enlarge images 2x with Real-ESRGAN super-resolution. 100% local processing. No uploads, complete privacy.">
+    <link rel="canonical" href="https://yourdomain.com/tools/upscaler.html">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "AI Image Upscaler - CloakImg AI",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "All",
+        "description": "Free online AI image upscaler. Enlarge images 2x with Real-ESRGAN super-resolution. 100% local processing.",
+        "url": "https://yourdomain.com/tools/upscaler.html",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
     <link rel="stylesheet" href="../common.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .nav-link {
+            font-size: 1.15rem !important;
+            font-weight: 600 !important;
+            padding: 0.7rem 1.4rem !important;
+        }
+        @media (max-width: 768px) {
+            .nav-link { font-size: 0.95rem !important; padding: 0.4rem 0.8rem !important; }
+        }
+        @media (max-width: 480px) {
+            .nav-link { font-size: 0.8rem !important; padding: 0.3rem 0.6rem !important; }
+        }
+        .tool-hero {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd);
+            border-radius: 2rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .tool-hero h1 { font-size: 2rem; font-weight: 800; color: #1e3a5f; }
+        .tool-hero p { color: #1e3a5f; }
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+            border: none !important;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #6d28d9) !important;
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            border: 2px solid #2563eb !important;
+            color: #2563eb !important;
+        }
+        .btn-outline:hover { background: #2563eb !important; color: white !important; }
+        .dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            background: #fafcff;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .dropzone.active { border-color: #2563eb; background: #eff6ff; }
+        .preview-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+        .preview-box {
+            flex: 1;
+            min-width: 200px;
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 0.75rem;
+            margin: 12px 0;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        footer {
+            background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+            border-top: 1px solid #e2e8f0;
+            margin-top: 2rem;
+            padding: 1.5rem 0;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 0.5rem;
+        }
+        .footer-right { display: flex; gap: 1.5rem; }
+        .footer-right a { color: #475569; text-decoration: none; font-size: 0.85rem; }
+        .footer-right a:hover { color: #2563eb; }
+        .footer-bottom {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+        }
+        @media (max-width: 768px) {
+            .tool-hero h1 { font-size: 1.5rem; }
+            .preview-area { flex-direction: column; }
+            .footer-content { flex-direction: column; text-align: center; }
+            .footer-right { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
 </head>
 <body>
-<div class="tool-page-container">
+<div class="app-container">
     <header class="site-header">
-        <div class="logo"><h1>ImageForge<span>AI</span></h1><span>AI Upscaler</span></div>
+        <div class="logo">
+            <h1>CloakImg&nbsp;<span>AI</span></h1>
+            <span>Professional AI Image Toolkit</span>
+        </div>
         <div class="nav-links">
             <a href="../index.html" class="nav-link">🏠 Home</a>
-            <a href="upscaler.html" class="nav-link active">✨ Upscaler</a>
-            <a href="compressor.html" class="nav-link">🗜️ Compressor</a>
-            <a href="bg-remover.html" class="nav-link">🎨 BG Remover</a>
-            <a href="convert.html" class="nav-link">🔄 PNG to JPG</a>
-            <a href="resize.html" class="nav-link">📏 Resize</a>
+            <a href="../blog.html" class="nav-link">📝 Blog</a>
+            <a href="../tools.html" class="nav-link active">🛠️ Tools</a>
+            <a href="../help.html" class="nav-link">❓ Help</a>
+            <a href="../pricing.html" class="nav-link">💰 Pricing</a>
+            <a href="../account.html" class="nav-link">👤 Account</a>
         </div>
         <div class="auth-area" id="authWidget"></div>
     </header>
 
-    <div class="tool-card-large">
-        <a href="../index.html" class="back-link">← Back to Home</a>
-        <h1><i class="fas fa-magic" style="color:#2563eb"></i> AI Image Upscaler</h1>
-        <p>Enlarge your images up to 2x with Real-ESRGAN AI super-resolution</p>
+    <div class="tool-hero">
+        <h1>✨ AI Image Upscaler</h1>
+        <p>Enlarge images 2x with Real-ESRGAN super-resolution — <strong>100% local processing</strong></p>
+    </div>
 
+    <div class="tool-card-large">
+        <a href="../tools.html" class="back-link">← Back to Tools</a>
         <div id="usageDisplay" style="margin: 16px 0;"></div>
 
         <div class="dropzone" id="dropzone">
@@ -40,12 +167,12 @@
         <div id="previewArea" class="preview-area" style="display: none;">
             <div class="preview-box">
                 <strong>Original</strong>
-                <img id="originalImg" class="preview-img" alt="original">
+                <img id="originalImg" class="preview-img" alt="Original image">
                 <div id="originalSize"></div>
             </div>
             <div class="preview-box">
                 <strong>AI Upscaled ✨</strong>
-                <img id="upscaledImg" class="preview-img" alt="upscaled" style="display:none">
+                <img id="upscaledImg" class="preview-img" alt="AI upscaled image" style="display:none">
                 <div id="loaderDiv"><i class="fas fa-spinner fa-pulse"></i> Processing...</div>
                 <div id="progressText">Waiting to start...</div>
                 <div id="upscaledSize"></div>
@@ -58,13 +185,40 @@
             <button class="btn btn-outline" id="downloadBtn" style="background:#eef2ff;" disabled><i class="fas fa-download"></i> Download Result</button>
         </div>
     </div>
-    <footer>© 2026 AI ImageForge — Powered by Real-ESRGAN</footer>
+	<!-- ====== RELATED TOOLS - 内链 ====== -->
+	<div class="related-tools" style="margin: 2rem 0; padding: 1.5rem; background: #f8fafc; border-radius: 1.5rem; border: 1px solid #e2e8f0;">
+		<h3 style="text-align:center; margin-bottom:1.2rem; font-size:1.1rem;">
+			<i class="fas fa-link" style="color:#2563eb;"></i> Related Tools
+		</h3>
+		<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:0.8rem; text-align:center;">
+			<a href="../tools/id-photo.html" style="color:#2563eb; text-decoration:none; font-size:0.9rem; padding:0.5rem; border-radius:8px; background:white; border:1px solid #e2e8f0;">🪪 ID Photo Maker</a>
+			<a href="../tools/upscaler.html" style="color:#2563eb; text-decoration:none; font-size:0.9rem; padding:0.5rem; border-radius:8px; background:white; border:1px solid #e2e8f0;">✨ AI Upscaler</a>
+			<a href="../tools/bg-remover.html" style="color:#2563eb; text-decoration:none; font-size:0.9rem; padding:0.5rem; border-radius:8px; background:white; border:1px solid #e2e8f0;">🎨 BG Remover</a>
+			<a href="../tools/compressor.html" style="color:#2563eb; text-decoration:none; font-size:0.9rem; padding:0.5rem; border-radius:8px; background:white; border:1px solid #e2e8f0;">🗜️ Compressor</a>
+			<a href="../tools/convert.html" style="color:#2563eb; text-decoration:none; font-size:0.9rem; padding:0.5rem; border-radius:8px; background:white; border:1px solid #e2e8f0;">🔄 PNG to JPG</a>
+			<a href="../tools/resize.html" style="color:#2563eb; text-decoration:none; font-size:0.9rem; padding:0.5rem; border-radius:8px; background:white; border:1px solid #e2e8f0;">📏 Resize</a>
+		</div>
+	</div>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left"><i class="fas fa-microchip"></i> CloakImg AI — 100% Local Processing</div>
+            <div class="footer-right">
+                <a href="../pricing.html">Pricing</a>
+                <a href="../privacy.html">Privacy</a>
+                <a href="../terms.html">Terms</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../blog.html">Blog</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 CloakImg AI. All rights reserved.</div>
+    </footer>
 </div>
+
 <script src="../common.js"></script>
 <script>
 let originalFile = null;
 let resultBase64 = null;
-
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
 const previewArea = document.getElementById('previewArea');
@@ -77,26 +231,20 @@ const processBtn = document.getElementById('processBtn');
 const resetBtn = document.getElementById('resetBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 const originalSizeSpan = document.getElementById('originalSize');
+const upscaledSizeSpan = document.getElementById('upscaledSize');
 
 window.ForgeAuth.displayUsageInfo('usageDisplay', 'upscaler');
 
 async function handleFile(file) {
     const user = window.ForgeAuth.currentUser();
-    if (!user) {
-        window.ForgeAuth.openAuthModal('login');
-        return;
-    }
+    if (!user) { window.ForgeAuth.openAuthModal('login'); return; }
     try {
         const usage = await window.ForgeAuth.getUsage();
-        const tool = usage.tools.upscaler;
-        if (!tool.isPro && tool.remaining <= 0) {
-            alert(`⚠️ Daily limit reached (${tool.used}/${tool.limit}). Upgrade to Pro.`);
+        if (!usage.tools.upscaler.isPro && usage.tools.upscaler.remaining <= 0) {
+            alert(`⚠️ Daily limit reached. Upgrade to Pro.`);
             return;
         }
-    } catch (e) {
-        alert('Could not check usage. Please refresh.');
-        return;
-    }
+    } catch (e) { alert('Could not check usage.'); return; }
     originalFile = file;
     const dataUrl = URL.createObjectURL(file);
     const img = new Image();
@@ -124,7 +272,7 @@ processBtn.addEventListener('click', async () => {
     progressText.textContent = 'Submitting to AI server...';
 
     try {
-        const response = await window.ForgeAuth.uploadToVPS('/upscale', originalFile);
+        const response = await window.ForgeAuth.uploadToVPS('/api/upscale', originalFile);
         progressText.textContent = 'AI processing (may take 10-60 seconds)...';
         const result = await window.ForgeAuth.pollResult(response.task_id);
         resultBase64 = result.result;
