@@ -37,6 +37,18 @@ body {
     -webkit-background-clip: text;
     color: transparent;
     letter-spacing: -0.3px;
+	display: inline-flex;   /* 👈 修改这里，用 flex 布局也能让它们保持在一行 */
+    align-items: center;    /* 👈 垂直居中 */
+    white-space: nowrap;
+}
+/* AI 与 CloakImg 完全一致，没有 span 样式覆盖 */
+.logo h1 span {
+    background: linear-gradient(135deg, #2563eb, #7c3aed, #8b5cf6);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 .logo span {

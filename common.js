@@ -2,10 +2,7 @@
 // 前端公共JS - 包含认证、API调用、使用统计
 // ============================================
 
-// ============================================
-// API配置 - 指向 Cloudflare Worker
-// ============================================
-const API_BASE = 'https://imageforge-api.etiplpl.workers.dev/api';
+const API_BASE = 'https://CloakImg-api.etiplpl.workers.dev/api';
 
 // ---------- 用户认证 ----------
 async function apiRequest(endpoint, options = {}) {
@@ -252,7 +249,7 @@ function renderAuthWidget() {
     }
 }
 
-// ---------- 认证弹窗（注册成功显示清晰提示） ----------
+// ---------- 认证弹窗 ----------
 function openAuthModal(mode) {
     const modal = document.createElement('div');
     modal.style.cssText = `
@@ -317,7 +314,6 @@ function openAuthModal(mode) {
         
         try {
             if (isLogin) {
-                // ===== 登录 =====
                 const result = await login(email, password);
                 messageEl.innerHTML = '✅ Login successful!';
                 messageEl.style.color = '#22c55e';
@@ -326,13 +322,11 @@ function openAuthModal(mode) {
                     window.location.reload();
                 }, 1000);
             } else {
-                // ===== 注册 =====
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating account...';
                 
                 const result = await register(email, password);
                 
-                // 注册成功 - 显示清晰的提示，引导用户去邮箱验证
                 messageEl.innerHTML = `
                     <div style="background: #dbeafe; border-radius: 12px; padding: 14px; text-align: left;">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
@@ -352,11 +346,9 @@ function openAuthModal(mode) {
                 `;
                 messageEl.style.color = '#1e40af';
                 
-                // 重置按钮状态
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Create Account';
                 
-                // 8秒后自动关闭弹窗
                 setTimeout(() => {
                     if (document.body.contains(modal)) {
                         modal.remove();
@@ -374,7 +366,6 @@ function openAuthModal(mode) {
     });
 }
 
-// ---------- 全局暴露 ----------
 window.ForgeAuth = {
     login,
     register,
@@ -394,9 +385,6 @@ window.ForgeAuth = {
     currentUser: () => JSON.parse(localStorage.getItem('forge_user'))
 };
 
-// ============================================
-// 页面加载时自动初始化
-// ============================================
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
         window.ForgeAuth.renderAuthWidget();

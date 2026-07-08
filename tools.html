@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All AI Image Tools - CloakImg AI | Upscale, Remove BG, Compress & More</title>
+    <meta name="description" content="Explore all CloakImg AI tools: AI image upscaling, background removal, compression, PNG to JPG conversion, resizing, and ID photo maker. Free & Pro plans available.">
+    <link rel="canonical" href="https://yourdomain.com/tools.html">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "All AI Image Tools - CloakImg AI",
+        "description": "Explore all CloakImg AI tools: AI image upscaling, background removal, compression, PNG to JPG conversion, resizing, and ID photo maker.",
+        "url": "https://yourdomain.com/tools.html"
+    }
+    </script>
+    <link rel="stylesheet" href="common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .nav-link {
+            font-size: 1.15rem !important;
+            font-weight: 600 !important;
+            padding: 0.7rem 1.4rem !important;
+        }
+        @media (max-width: 768px) {
+            .nav-link { font-size: 0.95rem !important; padding: 0.4rem 0.8rem !important; }
+        }
+        @media (max-width: 480px) {
+            .nav-link { font-size: 0.8rem !important; padding: 0.3rem 0.6rem !important; }
+        }
+        .tools-hero {
+            background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 50%, #ede9fe 100%);
+            border-radius: 2rem;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .tools-hero h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.3rem; }
+        .tools-hero p { color: #475569; }
+        .tools-grid-page {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 2rem;
+        }
+        .tool-card-page {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .tool-card-page:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+        }
+        .tool-card-page .icon {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin-bottom: 0.8rem;
+        }
+        .tool-card-page h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .tool-card-page .desc { color: #475569; font-size: 0.9rem; margin-bottom: 0.8rem; }
+        .tool-card-page .tech { font-size: 0.7rem; color: #94a3b8; }
+        .tool-card-page .btn { margin-top: 1rem; width: 100%; justify-content: center; }
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+            border: none !important;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #6d28d9) !important;
+            transform: translateY(-2px);
+        }
+        .related-tools {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        .related-tools h3 {
+            text-align: center;
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
+        }
+        .related-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.8rem;
+            text-align: center;
+        }
+        .related-tools-grid a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .related-tools-grid a:hover {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        footer {
+            background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+            border-top: 1px solid #e2e8f0;
+            margin-top: 2rem;
+            padding: 1.5rem 0;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 0.5rem;
+        }
+        .footer-right { display: flex; gap: 1.5rem; }
+        .footer-right a { color: #475569; text-decoration: none; font-size: 0.85rem; }
+        .footer-right a:hover { color: #2563eb; }
+        .footer-bottom {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+        }
+        @media (max-width: 768px) {
+            .tools-hero h1 { font-size: 1.6rem; }
+            .tools-grid-page { grid-template-columns: 1fr; }
+            .related-tools-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-content { flex-direction: column; text-align: center; }
+            .footer-right { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="site-header">
+        <div class="logo">
+            <h1>CloakImg&nbsp;<span>AI</span></h1>
+            <span>Professional AI Image Toolkit</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">🏠 Home</a>
+            <a href="blog.html" class="nav-link">📝 Blog</a>
+            <a href="tools.html" class="nav-link active">🛠️ Tools</a>
+            <a href="help.html" class="nav-link">❓ Help</a>
+            <a href="pricing.html" class="nav-link">💰 Pricing</a>
+            <a href="account.html" class="nav-link">👤 Account</a>
+        </div>
+        <div class="auth-area" id="authWidget"></div>
+    </header>
+
+    <div class="tools-hero">
+        <h1>🛠️ All Tools</h1>
+        <p>Professional AI image editing — 100% local processing, no uploads, complete privacy.</p>
+    </div>
+
+    <div class="tools-grid-page">
+        <div class="tool-card-page">
+            <div class="icon"><i class="fas fa-id-card"></i></div>
+            <h3>ID Photo Maker</h3>
+            <div class="desc">Replace background & resize for passport/visa</div>
+            <div class="tech">⚙️ Rembg · U²-Net · Background Synthesis</div>
+            <a href="tools/id-photo.html" class="btn btn-primary">Open Tool →</a>
+        </div>
+        <div class="tool-card-page">
+            <div class="icon"><i class="fas fa-magic"></i></div>
+            <h3>AI Image Upscaler</h3>
+            <div class="desc">Upscale images 2x with AI super-resolution</div>
+            <div class="tech">⚙️ Real-ESRGAN · Neural Network Upscaling</div>
+            <a href="tools/upscaler.html" class="btn btn-primary">Open Tool →</a>
+        </div>
+        <div class="tool-card-page">
+            <div class="icon"><i class="fas fa-eraser"></i></div>
+            <h3>Background Remover</h3>
+            <div class="desc">Remove image background with AI segmentation</div>
+            <div class="tech">⚙️ Rembg · U²-Net · Semantic Segmentation</div>
+            <a href="tools/bg-remover.html" class="btn btn-primary">Open Tool →</a>
+        </div>
+        <div class="tool-card-page">
+            <div class="icon"><i class="fas fa-compress"></i></div>
+            <h3>Image Compressor</h3>
+            <div class="desc">Reduce file size while preserving quality</div>
+            <div class="tech">⚙️ Sharp · libvips · Perceptual Compression</div>
+            <a href="tools/compressor.html" class="btn btn-primary">Open Tool →</a>
+        </div>
+        <div class="tool-card-page">
+            <div class="icon"><i class="fas fa-exchange-alt"></i></div>
+            <h3>PNG to JPG</h3>
+            <div class="desc">Convert PNG to JPG with white background</div>
+            <div class="tech">⚙️ Sharp · libjpeg-turbo · Format Encoding</div>
+            <a href="tools/convert.html" class="btn btn-primary">Open Tool →</a>
+        </div>
+        <div class="tool-card-page">
+            <div class="icon"><i class="fas fa-arrows-alt"></i></div>
+            <h3>Resize Image</h3>
+            <div class="desc">Change image dimensions to custom size</div>
+            <div class="tech">⚙️ Sharp · Lanczos Resampling · Anti-aliasing</div>
+            <a href="tools/resize.html" class="btn btn-primary">Open Tool →</a>
+        </div>
+    </div>
+
+    <!-- ====== RELATED TOOLS - 内链 ====== -->
+    <div class="related-tools">
+        <h3><i class="fas fa-link" style="color:#2563eb;"></i> Related Pages</h3>
+        <div class="related-tools-grid">
+            <a href="pricing.html">💰 Pricing</a>
+            <a href="help.html">❓ Help Center</a>
+            <a href="blog.html">📝 Blog</a>
+            <a href="about.html">🚀 About</a>
+            <a href="privacy.html">🔒 Privacy</a>
+            <a href="contact.html">📧 Contact</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left"><i class="fas fa-microchip"></i> CloakImg AI — 100% Local Processing</div>
+            <div class="footer-right">
+                <a href="pricing.html">Pricing</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="blog.html">Blog</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 CloakImg AI. All rights reserved.</div>
+    </footer>
+</div>
+<script src="common.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
+            window.ForgeAuth.renderAuthWidget();
+        }
+    });
+</script>
+</body>
+</html>

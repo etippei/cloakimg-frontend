@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About CloakImg AI - 100% Local AI Image Processing</title>
+    <meta name="description" content="CloakImg AI offers free online AI image tools: upscaling, background removal, compression, conversion, and resizing. All processing is 100% local and private.">
+    <link rel="canonical" href="https://yourdomain.com/about.html">
+    <link rel="stylesheet" href="common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .nav-link {
+            font-size: 1.15rem !important;
+            font-weight: 600 !important;
+            padding: 0.7rem 1.4rem !important;
+        }
+        @media (max-width: 768px) {
+            .nav-link { font-size: 0.95rem !important; padding: 0.4rem 0.8rem !important; }
+        }
+        @media (max-width: 480px) {
+            .nav-link { font-size: 0.8rem !important; padding: 0.3rem 0.6rem !important; }
+        }
+        .about-hero {
+            background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 50%, #ede9fe 100%);
+            border-radius: 2rem;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .about-hero h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.3rem; }
+        .about-hero p { color: #475569; }
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .about-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .about-card .icon {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin-bottom: 0.8rem;
+        }
+        .about-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.4rem; }
+        .about-card p { color: #475569; font-size: 0.9rem; line-height: 1.6; }
+        .about-text {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            margin-top: 1.5rem;
+        }
+        .about-text h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.8rem; }
+        .about-text p { color: #334155; line-height: 1.7; margin-bottom: 1rem; }
+        .related-tools {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        .related-tools h3 {
+            text-align: center;
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
+        }
+        .related-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.8rem;
+            text-align: center;
+        }
+        .related-tools-grid a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .related-tools-grid a:hover {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        footer {
+            background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+            border-top: 1px solid #e2e8f0;
+            margin-top: 2rem;
+            padding: 1.5rem 0;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 0.5rem;
+        }
+        .footer-right { display: flex; gap: 1.5rem; }
+        .footer-right a { color: #475569; text-decoration: none; font-size: 0.85rem; }
+        .footer-right a:hover { color: #2563eb; }
+        .footer-bottom {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+        }
+        @media (max-width: 768px) {
+            .about-hero h1 { font-size: 1.6rem; }
+            .about-grid { grid-template-columns: 1fr; }
+            .related-tools-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-content { flex-direction: column; text-align: center; }
+            .footer-right { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="site-header">
+        <div class="logo">
+            <h1>CloakImg&nbsp;<span>AI</span></h1>
+            <span>Professional AI Image Toolkit</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">🏠 Home</a>
+            <a href="blog.html" class="nav-link">📝 Blog</a>
+            <a href="tools.html" class="nav-link">🛠️ Tools</a>
+            <a href="help.html" class="nav-link">❓ Help</a>
+            <a href="pricing.html" class="nav-link">💰 Pricing</a>
+            <a href="account.html" class="nav-link">👤 Account</a>
+        </div>
+        <div class="auth-area" id="authWidget"></div>
+    </header>
+
+    <div class="about-hero">
+        <h1>🚀 About CloakImg AI</h1>
+        <p>Professional AI image tools — 100% local, private, and free to start.</p>
+    </div>
+
+    <div class="about-content">
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>100% Local Processing</h3>
+                <p>Your images never leave your device. No uploads, no storage, no sharing.</p>
+            </div>
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-bolt"></i></div>
+                <h3>AI-Powered</h3>
+                <p>Real-ESRGAN for upscaling, Rembg U²-Net for background removal, Sharp for compression.</p>
+            </div>
+            <div class="about-card">
+                <div class="icon"><i class="fas fa-gem"></i></div>
+                <h3>Free & Pro Plans</h3>
+                <p>Start free with daily limits. Upgrade to Pro for unlimited access and premium features.</p>
+            </div>
+        </div>
+
+        <div class="about-text">
+            <h2>Why CloakImg AI?</h2>
+            <p>We built CloakImg AI to give creators, designers, and everyday users access to professional-grade AI image tools without compromising privacy.</p>
+            <p>Unlike cloud-based services that upload and store your images, <strong>CloakImg AI processes everything locally</strong> or on our secure VPS with automatic deletion. Your photos stay yours — always.</p>
+            <p>Our stack: <strong>Real-ESRGAN</strong> (AI upscaling), <strong>Rembg + U²-Net</strong> (background removal), <strong>Sharp + libvips</strong> (compression, conversion, resizing). All running on high-performance servers with 2G+ memory optimization.</p>
+            <p style="margin-top:1rem;">Founded in 2026, CloakImg AI is proudly independent and committed to user privacy.</p>
+        </div>
+    </div>
+
+    <!-- ====== RELATED TOOLS - 内链 ====== -->
+    <div class="related-tools">
+        <h3><i class="fas fa-link" style="color:#2563eb;"></i> Try Our AI Tools</h3>
+        <div class="related-tools-grid">
+            <a href="tools/id-photo.html">🪪 ID Photo Maker</a>
+            <a href="tools/upscaler.html">✨ AI Upscaler</a>
+            <a href="tools/bg-remover.html">🎨 BG Remover</a>
+            <a href="tools/compressor.html">🗜️ Compressor</a>
+            <a href="tools/convert.html">🔄 PNG to JPG</a>
+            <a href="pricing.html">💰 Upgrade to Pro</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left"><i class="fas fa-microchip"></i> CloakImg AI — 100% Local Processing</div>
+            <div class="footer-right">
+                <a href="pricing.html">Pricing</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="blog.html">Blog</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 CloakImg AI. All rights reserved.</div>
+    </footer>
+</div>
+<script src="common.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
+            window.ForgeAuth.renderAuthWidget();
+        }
+    });
+</script>
+</body>
+</html>

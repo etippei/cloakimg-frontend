@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Account - ImageForge AI</title>
+    <title>My Account - CloakImg AI</title>
     <link rel="stylesheet" href="common.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -198,14 +198,14 @@
 <div class="app-container">
     <header class="site-header">
         <div class="logo">
-            <h1>ImageForge<span>AI</span></h1>
+            <h1>CloakImg&nbsp;<span>AI</span></h1>
             <span>Professional AI Image Toolkit</span>
         </div>
         <div class="nav-links">
             <a href="index.html" class="nav-link">🏠 Home</a>
             <a href="blog.html" class="nav-link">📝 Blog</a>
+            <a href="tools.html" class="nav-link">🛠️ Tools</a>
             <a href="help.html" class="nav-link">❓ Help</a>
-            <a href="contact.html" class="nav-link">📧 Contact</a>
             <a href="pricing.html" class="nav-link">💰 Pricing</a>
             <a href="account.html" class="nav-link active">👤 Account</a>
         </div>
@@ -227,24 +227,23 @@
 
     <footer>
         <div class="footer-content">
-            <div class="footer-left"><i class="fas fa-microchip"></i> ImageForge AI — Professional upscaling & editing suite.</div>
+            <div class="footer-left"><i class="fas fa-microchip"></i> CloakImg AI — 100% Local Processing</div>
             <div class="footer-right">
                 <a href="pricing.html">Pricing</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+                <a href="about.html">About</a>
                 <a href="contact.html">Contact</a>
-                <a href="help.html">Help</a>
                 <a href="blog.html">Blog</a>
-                <a href="account.html">Account</a>
-                <a href="#" onclick="window.ForgeAuth?.logout ? window.ForgeAuth.logout() : alert('Please refresh'); return false;">Sign Out</a>
             </div>
         </div>
-        <div class="footer-bottom">© 2026 ImageForge AI. All rights reserved.</div>
+        <div class="footer-bottom">© 2026 CloakImg AI. All rights reserved.</div>
     </footer>
 </div>
 
 <script src="common.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 渲染认证组件
         if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
             window.ForgeAuth.renderAuthWidget();
         }
@@ -269,7 +268,6 @@
         }
 
         try {
-            // 获取用户最新信息（包含订阅过期时间）
             const response = await fetch('/api/auth/me', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('forge_token')}`
@@ -300,7 +298,6 @@
         const now = Math.floor(Date.now() / 1000);
         const isExpired = isPro && expiresAt > 0 && expiresAt < now;
 
-        // 格式化过期时间
         let expiryDisplay = 'Never expires';
         let expiryClass = 'badge-free';
         if (isPro && expiresAt > 0) {
@@ -311,7 +308,6 @@
             expiryClass = isExpired ? 'badge-expired' : 'badge-pro';
         }
 
-        // 计算剩余天数
         let daysRemaining = null;
         if (isPro && expiresAt > 0 && !isExpired) {
             daysRemaining = Math.ceil((expiresAt - now) / 86400);
@@ -319,7 +315,6 @@
 
         container.innerHTML = `
             <div class="account-grid">
-                <!-- 订阅状态 -->
                 <div class="account-card account-card-full">
                     <h3><i class="fas fa-crown"></i> Subscription</h3>
                     <div>
@@ -343,7 +338,6 @@
                     </div>
                 </div>
 
-                <!-- 账户信息 -->
                 <div class="account-card">
                     <h3><i class="fas fa-user"></i> Account Info</h3>
                     <div class="value" style="font-size:1.1rem;">${user.email}</div>
@@ -355,7 +349,6 @@
                     </div>
                 </div>
 
-                <!-- 修改密码 -->
                 <div class="account-card">
                     <h3><i class="fas fa-key"></i> Change Password</h3>
                     <form id="changePasswordForm">
@@ -375,7 +368,6 @@
                     </form>
                 </div>
 
-                <!-- 订阅历史/操作 -->
                 <div class="account-card">
                     <h3><i class="fas fa-cog"></i> Account Actions</h3>
                     <div style="display:flex; flex-direction:column; gap:0.6rem;">
@@ -396,7 +388,6 @@
             </div>
         `;
 
-        // 绑定修改密码表单
         const passwordForm = document.getElementById('changePasswordForm');
         if (passwordForm) {
             passwordForm.addEventListener('submit', async function(e) {
