@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /account.html
+Disallow: /api/
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /admin/
+
+Sitemap: https://cloakimg.com/sitemap.xml
