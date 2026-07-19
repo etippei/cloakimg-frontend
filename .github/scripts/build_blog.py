@@ -5,24 +5,26 @@ Build blog from GitHub Issues
 - Converts Markdown to HTML
 - Generates individual post pages
 - Updates blog.html with post list
+- Generates sitemap.xml
 """
 
 import os
-import json
 import re
 import html
-from datetime import datetime
-from pathlib import Path
-
+import requests
 import markdown
 import frontmatter
-import requests
+from pathlib import Path
+from datetime import datetime
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
 # Configuration
 REPO = os.environ.get('GITHUB_REPO', 'your-username/your-repo')
 TOKEN = os.environ.get('GITHUB_TOKEN')
-API_URL = f'https://api.github.com/repos/{REPO}/issues'
+BASE_URL = 'https://cloakimg.com'
 
+API_URL = f'https://api.github.com/repos/{REPO}/issues'
 HEADERS = {
     'Authorization': f'token {TOKEN}',
     'Accept': 'application/vnd.github.v3+json'
@@ -32,6 +34,7 @@ HEADERS = {
 BLOG_DIR = Path('blog')
 POSTS_DIR = BLOG_DIR / 'posts'
 INDEX_FILE = Path('frontend/blog.html')
+SITEMAP_FILE = Path('sitemap.xml')
 TEMPLATE_DIR = Path('.github/templates')
 
 # Create directories
@@ -203,6 +206,7 @@ def generate_post_html(post):
             .post-body { padding: 1.5rem; }
             .footer-content { flex-direction: column; text-align: center; }
             .footer-right { flex-wrap: wrap; justify-content: center; }
+            .related-tools-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -310,17 +314,19 @@ def generate_index_html(posts):
     
     # Generate post cards HTML
     cards_html = ''
-    for post in sorted_posts[:20]:  # Show latest 20 posts
-        cards_html += f'''
+    if sorted_posts:
+        for post in sorted_posts[:20]:  # Show latest 20 posts
+            read_time = max(1, round(len(post['content'].split()) / 200))
+            cards_html += f'''
                 <div class="blog-card-full">
                     <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
                     <div class="blog-content">
                         <div class="blog-category">{html.escape(post['category'])}</div>
-                        <h3 class="blog-title">{html.escape(post['title'])}</h3>
+                        <h3 class="blog-title"><a href="blog/posts/{post['slug']}.html">{html.escape(post['title'])}</a></h3>
                         <p class="blog-excerpt">{html.escape(post['excerpt'])}</p>
                         <div class="blog-meta">
                             <span><i class="far fa-calendar"></i> {post['display_date']}</span>
-                            <span><i class="far fa-clock"></i> {max(1, round(len(post['content'].split())/200))} min read</span>
+                            <span><i class="far fa-clock"></i> {read_time} min read</span>
                         </div>
                         <a href="blog/posts/{post['slug']}.html" class="blog-read-more">Read Full Article →</a>
                     </div>
@@ -335,13 +341,15 @@ def generate_index_html(posts):
         # Find the blog grid and replace content
         import re
         pattern = r'(<div class="blog-grid-full" id="blogGrid">).*?(</div>)'
-        replacement = f'\\1\n{cards_html}\n                \\2'
+        if cards_html:
+            replacement = f'\\1\n{cards_html}\n                \\2'
+        else:
+            replacement = f'\\1\n                <div class="blog-empty">\n                    <i class="fas fa-newspaper fa-3x" style="color:#94a3b8;"></i>\n                    <p style="color:#64748b; margin-top:1rem;">No articles published yet.</p>\n                    <p style="color:#94a3b8; font-size:0.85rem;">Check back soon for AI image editing tips!</p>\n                </div>\n                \\2'
         content = re.sub(pattern, replacement, content, flags=re.DOTALL)
         
-        # Also update the count in filter bar if needed
         # Update the "All" filter button count
-        all_btn_pattern = r'(<button class="filter-btn active" data-filter="all">)All(</button>)'
-        content = re.sub(all_btn_pattern, f'\\1All ({len(sorted_posts)})\\2', content)
+        content = re.sub(r'(<button class="filter-btn active" data-filter="all">)All(</button>)',
+                         f'\\1All ({len(sorted_posts)})\\2', content)
         
         # Update category counts
         categories = {}
@@ -353,25 +361,142 @@ def generate_index_html(posts):
             btn_pattern = rf'(<button class="filter-btn" data-filter="{cat}">){cat}(</button>)'
             content = re.sub(btn_pattern, f'\\1{cat} ({count})\\2', content, flags=re.IGNORECASE)
         
-        # Update the All filter button if not using template
-        all_btn_pattern = r'(<button class="filter-btn active" data-filter="all">)[^<]*(</button>)'
-        content = re.sub(all_btn_pattern, f'\\1All ({len(sorted_posts)})\\2', content)
-        
         with open(INDEX_FILE, 'w', encoding='utf-8') as f:
             f.write(content)
+        print(f"✅ Blog index updated: {INDEX_FILE}")
     else:
         print(f"⚠️ {INDEX_FILE} not found, creating new one...")
-        # Create a minimal blog.html (you should have this file already)
+        # Create a minimal blog.html
+        minimal_blog = f'''<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Blog - CloakImg AI</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+<div class="app-container">
+    <header class="site-header"><div class="logo"><h1>CloakImg <span>AI</span></h1></div></header>
+    <div class="blog-grid-full" id="blogGrid">
+        {cards_html if cards_html else '<div class="blog-empty"><p>No articles yet.</p></div>'}
+    </div>
+</div>
+</body>
+</html>'''
+        with open(INDEX_FILE, 'w', encoding='utf-8') as f:
+            f.write(minimal_blog)
+        print(f"✅ Created new {INDEX_FILE}")
+
+
+def generate_sitemap(posts):
+    """Generate sitemap.xml with all pages and blog posts"""
+    
+    # Create root element
+    urlset = ET.Element('urlset', xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+    
+    # Get current date
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    # 1. Home page
+    home = ET.SubElement(urlset, 'url')
+    loc = ET.SubElement(home, 'loc')
+    loc.text = f"{BASE_URL}/"
+    lastmod = ET.SubElement(home, 'lastmod')
+    lastmod.text = today
+    changefreq = ET.SubElement(home, 'changefreq')
+    changefreq.text = 'daily'
+    priority = ET.SubElement(home, 'priority')
+    priority.text = '1.0'
+    
+    # 2. Blog list page
+    blog = ET.SubElement(urlset, 'url')
+    loc = ET.SubElement(blog, 'loc')
+    loc.text = f"{BASE_URL}/blog.html"
+    lastmod = ET.SubElement(blog, 'lastmod')
+    lastmod.text = today
+    changefreq = ET.SubElement(blog, 'changefreq')
+    changefreq.text = 'daily'
+    priority = ET.SubElement(blog, 'priority')
+    priority.text = '0.9'
+    
+    # 3. All blog post pages
+    sorted_posts = sorted(posts, key=lambda x: x['created_at'], reverse=True)
+    for post in sorted_posts:
+        url = ET.SubElement(urlset, 'url')
+        loc = ET.SubElement(url, 'loc')
+        loc.text = f"{BASE_URL}/blog/posts/{post['slug']}.html"
+        
+        lastmod = ET.SubElement(url, 'lastmod')
+        if post.get('updated_at'):
+            lastmod.text = post['updated_at'][:10]
+        elif post.get('created_at'):
+            lastmod.text = post['created_at'][:10]
+        else:
+            lastmod.text = today
+        
+        changefreq = ET.SubElement(url, 'changefreq')
+        changefreq.text = 'weekly'
+        
+        priority = ET.SubElement(url, 'priority')
+        priority.text = '0.8'
+    
+    # 4. Core tool pages
+    tool_pages = [
+        {'path': 'tools.html', 'priority': '0.7'},
+        {'path': 'tools/id-photo.html', 'priority': '0.6'},
+        {'path': 'tools/upscaler.html', 'priority': '0.6'},
+        {'path': 'tools/bg-remover.html', 'priority': '0.6'},
+        {'path': 'tools/compressor.html', 'priority': '0.6'},
+        {'path': 'tools/convert.html', 'priority': '0.6'},
+        {'path': 'tools/resize.html', 'priority': '0.6'},
+        {'path': 'pricing.html', 'priority': '0.6'},
+        {'path': 'help.html', 'priority': '0.5'},
+        {'path': 'contact.html', 'priority': '0.5'},
+        {'path': 'about.html', 'priority': '0.5'},
+        {'path': 'privacy-policy.html', 'priority': '0.3'},
+        {'path': 'terms-of-service.html', 'priority': '0.3'},
+        {'path': 'cookie-policy.html', 'priority': '0.3'},
+        {'path': 'account.html', 'priority': '0.4'},
+    ]
+    
+    for page in tool_pages:
+        url = ET.SubElement(urlset, 'url')
+        loc = ET.SubElement(url, 'loc')
+        loc.text = f"{BASE_URL}/{page['path']}"
+        lastmod = ET.SubElement(url, 'lastmod')
+        lastmod.text = today
+        changefreq = ET.SubElement(url, 'changefreq')
+        changefreq.text = 'monthly'
+        priority = ET.SubElement(url, 'priority')
+        priority.text = page['priority']
+    
+    # Generate pretty XML
+    xml_str = ET.tostring(urlset, encoding='unicode')
+    dom = minidom.parseString(xml_str)
+    pretty_xml = dom.toprettyxml(indent="  ")
+    
+    # Add XML declaration
+    sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n' + '\n'.join(pretty_xml.split('\n')[1:])
+    
+    # Write to file
+    with open(SITEMAP_FILE, 'w', encoding='utf-8') as f:
+        f.write(sitemap_content)
+    
+    print(f"✅ Sitemap generated: {SITEMAP_FILE}")
 
 
 def main():
     print("🚀 Building blog from GitHub Issues...")
+    print(f"📁 Repository: {REPO}")
+    print(f"🌐 Base URL: {BASE_URL}")
     
     # Fetch issues
     issues = fetch_blog_issues()
     
     if not issues:
         print("⚠️ No blog issues found")
+        # Generate empty index and sitemap with core pages
+        generate_index_html([])
+        generate_sitemap([])
+        print("✅ Build complete (no posts)")
         return
     
     # Parse posts
@@ -390,7 +515,9 @@ def main():
     
     # Generate index
     generate_index_html(posts)
-    print("✅ Blog index updated")
+    
+    # Generate sitemap
+    generate_sitemap(posts)
     
     print(f"🎉 Build complete! {len(posts)} posts generated.")
 
