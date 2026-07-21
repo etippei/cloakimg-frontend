@@ -192,6 +192,25 @@
             background: #f8fafc;
             border-radius: 2rem;
         }
+        .blog-empty i {
+            color: #94a3b8;
+        }
+        .blog-empty p {
+            color: #64748b;
+        }
+
+        .blog-loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        .blog-loading i {
+            color: #2563eb;
+        }
+        .blog-loading p {
+            color: #94a3b8;
+            margin-top: 1rem;
+        }
 
         .related-tools {
             margin: 2rem 0;
@@ -290,7 +309,7 @@
 
     <!-- ===== FILTER BAR ===== -->
     <div class="blog-filter-bar">
-        <button class="filter-btn active" data-filter="all">All (1)</button>
+        <button class="filter-btn active" data-filter="all">All</button>
         <button class="filter-btn" data-filter="Tutorial">Tutorials</button>
         <button class="filter-btn" data-filter="Tips">Tips</button>
         <button class="filter-btn" data-filter="Guide">Guides</button>
@@ -300,28 +319,11 @@
 
     <!-- ===== BLOG GRID ===== -->
     <div class="blog-grid-full" id="blogGrid">
-         
-                <div class="blog-card-full">
-                    <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
-                    <div class="blog-content">
-                        <div class="blog-category">Uncategorized</div>
-                        <h3 class="blog-title">How to Convert PDF to Word with WPS Office: The Complete Local Conversion Guide</h3>
-                        <p class="blog-excerpt">---
-category: &quot;Tutorial&quot;
----
-
- How to Convert PDF to Word with WPS Office: The Complete Local Conversion Guide
-
-Portable Document Format PDF files are excellent for preserving document layout and ensu...</p>
-                        <div class="blog-meta">
-                            <span><i class="far fa-calendar"></i> July 20, 2026</span>
-                            <span><i class="far fa-clock"></i> 7 min read</span>
-                        </div>
-                        <a href="blog/posts/how-to-convert-pdf-to-word-with-wps-office-the-complete-local-conversion-guide.html" class="blog-read-more">Read Full Article →</a>
-                    </div>
-                </div>
-
-                </div>
+        <!-- 加载中占位 -->
+        <div class="blog-loading">
+            <i class="fas fa-spinner fa-pulse fa-3x"></i>
+            <p>Loading articles...</p>
+        </div>
     </div>
 
     <!-- ===== RELATED TOOLS ===== -->
@@ -362,48 +364,181 @@ Portable Document Format PDF files are excellent for preserving document layout 
             window.ForgeAuth.renderAuthWidget();
         }
 
-        // ===== 分类筛选功能 =====
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const blogCards = document.querySelectorAll('.blog-card-full');
+        // ============================================================
+        // 动态加载博客文章
+        // 如果 #blogGrid 中没有文章卡片，尝试从 /blog/posts/ 读取
+        // ============================================================
+        const grid = document.getElementById('blogGrid');
 
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const filter = this.dataset.filter;
+        // 检查是否已有文章卡片（由 Actions 脚本生成）
+        function hasArticles() {
+            const cards = grid.querySelectorAll('.blog-card-full');
+            return cards.length > 0;
+        }
 
-                // 更新按钮状态
-                filterBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
+        // 从文件名推断分类
+        function inferCategory(filename) {
+            const lower = filename.toLowerCase();
+            if (lower.includes('tutorial')) return 'Tutorial';
+            if (lower.includes('guide')) return 'Guide';
+            if (lower.includes('tip')) return 'Tips';
+            if (lower.includes('performance')) return 'Performance';
+            if (lower.includes('trend')) return 'Trends';
+            return 'Article';
+        }
 
-                // 筛选文章
-                blogCards.forEach(card => {
-                    if (filter === 'all') {
-                        card.style.display = 'flex';
-                    } else {
-                        const category = card.querySelector('.blog-category');
-                        if (category) {
-                            card.style.display = category.textContent === filter ? 'flex' : 'none';
-                        } else {
-                            card.style.display = 'none';
+        // 解析日期从文件名或内容
+        function parseDate(filename) {
+            // 尝试从文件名中提取日期 (YYYY-MM-DD)
+            const match = filename.match(/(\d{4}-\d{2}-\d{2})/);
+            if (match) {
+                const d = new Date(match[1]);
+                if (!isNaN(d)) {
+                    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                }
+            }
+            return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // 加载文章列表
+        async function loadArticles() {
+            // 如果已经有文章卡片，直接显示
+            if (hasArticles()) {
+                return;
+            }
+
+            try {
+                // 尝试获取 blog/posts/ 目录下的文件列表
+                // 注意：由于 GitHub Pages 不支持目录列表，我们使用一个替代方案
+                // 直接尝试获取已知的文章文件
+                const response = await fetch('blog/posts/');
+                
+                // 如果目录列表不可用，使用已知文章列表
+                // 从已生成的 HTML 文件名推断
+                const knownPosts = [
+                    'how-to-upscale-images-without-losing-quality-a-complete-guide'
+                ];
+
+                // 检查每个已知文章是否存在
+                let articles = [];
+                for (const slug of knownPosts) {
+                    try {
+                        const check = await fetch(`blog/posts/${slug}.html`, { method: 'HEAD' });
+                        if (check.ok) {
+                            // 从 slug 推断标题
+                            const title = slug
+                                .replace(/-/g, ' ')
+                                .replace(/\b\w/g, l => l.toUpperCase());
+                            articles.push({
+                                slug: slug,
+                                title: title,
+                                category: inferCategory(slug),
+                                date: parseDate(slug)
+                            });
                         }
+                    } catch (e) {
+                        // 忽略
                     }
-                });
-            });
-        });
+                }
 
-        // ===== 如果页面加载时没有任何文章，显示占位提示 =====
-        // 注意：脚本会替换 #blogGrid 的内容，所以这个检查在页面加载后执行
-        setTimeout(function() {
-            const grid = document.getElementById('blogGrid');
-            if (grid && grid.children.length === 0) {
+                if (articles.length === 0) {
+                    // 没有找到文章，显示空状态
+                    grid.innerHTML = `
+                        <div class="blog-empty">
+                            <i class="fas fa-newspaper fa-3x"></i>
+                            <p style="margin-top:1rem;">No articles published yet.</p>
+                            <p style="color:#94a3b8; font-size:0.85rem;">Check back soon for AI image editing tips!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 生成文章卡片
+                let cards = '';
+                articles.forEach(p => {
+                    const readTime = Math.max(1, Math.round(p.title.length / 30));
+                    cards += `
+                        <div class="blog-card-full">
+                            <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
+                            <div class="blog-content">
+                                <div class="blog-category">${p.category}</div>
+                                <h3 class="blog-title"><a href="blog/posts/${p.slug}.html">${p.title}</a></h3>
+                                <p class="blog-excerpt">Read this article to learn more about AI image processing.</p>
+                                <div class="blog-meta">
+                                    <span><i class="far fa-calendar"></i> ${p.date}</span>
+                                    <span><i class="far fa-clock"></i> ${readTime} min read</span>
+                                </div>
+                                <a href="blog/posts/${p.slug}.html" class="blog-read-more">Read Full Article →</a>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                grid.innerHTML = cards;
+
+                // 更新分类计数
+                updateCategoryCounts();
+
+            } catch (error) {
+                console.log('Error loading articles:', error);
+                // 显示空状态
                 grid.innerHTML = `
                     <div class="blog-empty">
-                        <i class="fas fa-newspaper fa-3x" style="color:#94a3b8;"></i>
-                        <p style="color:#64748b; margin-top:1rem;">No articles published yet.</p>
+                        <i class="fas fa-newspaper fa-3x"></i>
+                        <p style="margin-top:1rem;">No articles published yet.</p>
                         <p style="color:#94a3b8; font-size:0.85rem;">Check back soon for AI image editing tips!</p>
                     </div>
                 `;
             }
-        }, 2000);
+        }
+
+        // 更新分类计数（可选）
+        function updateCategoryCounts() {
+            // 如果 Actions 脚本已经更新了计数，就不需要再更新
+            const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+            const cards = document.querySelectorAll('.blog-card-full');
+            if (allBtn && cards.length > 0) {
+                // 如果按钮中已有数字，不重复添加
+                if (!allBtn.textContent.includes('(')) {
+                    allBtn.textContent = `All (${cards.length})`;
+                }
+            }
+        }
+
+        // ===== 分类筛选功能 =====
+        function initFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const cards = document.querySelectorAll('.blog-card-full');
+                    cards.forEach(card => {
+                        if (filter === 'all') {
+                            card.style.display = 'flex';
+                        } else {
+                            const category = card.querySelector('.blog-category');
+                            if (category) {
+                                card.style.display = category.textContent === filter ? 'flex' : 'none';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+        }
+
+        // ===== 执行加载 =====
+        // 等待 DOM 渲染完成后加载文章
+        setTimeout(() => {
+            loadArticles();
+            initFilters();
+        }, 500);
     });
 </script>
 </body>
