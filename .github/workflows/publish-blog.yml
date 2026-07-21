@@ -3,12 +3,15 @@ name: Publish Blog from Issues
 on:
   issues:
     types: [opened, edited, labeled, unlabeled, closed]
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
 
 jobs:
   build-blog:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'blog') || github.event_name == 'workflow_dispatch'
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.issue.labels.*.name, 'blog') ||
+      contains(github.event.issue.labels.*.name, 'blog-post')
     permissions:
       contents: write
       issues: read
@@ -20,11 +23,17 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          pip install markdown pyyaml frontmatter
+          pip install --upgrade pip
+          pip install markdown pyyaml frontmatter requests
+
+      - name: Debug - List files
+        run: |
+          ls -la
+          ls -la .github/scripts/ || echo "Scripts directory not found"
 
       - name: Fetch and Build Blog Posts
         env:
@@ -32,6 +41,11 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
         run: |
           python .github/scripts/build_blog.py
+
+      - name: Debug - Check generated files
+        run: |
+          ls -la blog/ || echo "blog directory not found"
+          ls -la blog/posts/ || echo "posts directory not found"
 
       - name: Commit and push generated files
         run: |
