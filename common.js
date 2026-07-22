@@ -249,9 +249,12 @@ function renderAuthWidget() {
     }
 }
 
-// ---------- 密码可见切换功能 ----------
+// ---------- 密码可见切换函数 ----------
 function togglePasswordVisibility(button) {
-    const input = button.parentElement.querySelector('input');
+    // 查找父容器中的 input
+    const wrapper = button.closest('.password-wrapper');
+    if (!wrapper) return;
+    const input = wrapper.querySelector('input');
     if (!input) return;
     
     if (input.type === 'password') {
@@ -265,33 +268,6 @@ function togglePasswordVisibility(button) {
     }
 }
 
-// ---------- 创建密码输入框（带可见切换） ----------
-function createPasswordField(placeholder, id, required = true) {
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'position: relative; width: 100%;';
-    
-    const input = document.createElement('input');
-    input.type = 'password';
-    input.id = id;
-    input.placeholder = placeholder;
-    input.required = required;
-    input.style.cssText = 'width: 100%; padding: 12px; padding-right: 44px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 1rem; box-sizing: border-box;';
-    
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.innerHTML = '<i class="fas fa-eye"></i>';
-    btn.style.cssText = 'position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1rem; padding: 4px;';
-    btn.setAttribute('aria-label', 'Show password');
-    btn.onclick = function(e) {
-        e.preventDefault();
-        togglePasswordVisibility(this);
-    };
-    
-    wrapper.appendChild(input);
-    wrapper.appendChild(btn);
-    return wrapper;
-}
-
 // ---------- 认证弹窗（包含密码可见切换） ----------
 function openAuthModal(mode) {
     const modal = document.createElement('div');
@@ -302,6 +278,17 @@ function openAuthModal(mode) {
     `;
     
     const isLogin = mode === 'login';
+    
+    // 密码输入框的 HTML（带可见切换按钮）
+    const passwordHtml = `
+        <div class="password-wrapper" style="position: relative; width: 100%;">
+            <input type="password" id="authPassword" placeholder="${isLogin ? 'Enter password' : 'Min 6 characters'}" style="width: 100%; padding: 12px; padding-right: 44px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
+            <button type="button" class="password-toggle" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1rem; padding: 4px;" aria-label="Show password">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
+    `;
+    
     modal.innerHTML = `
         <div style="background: white; border-radius: 24px; padding: 40px; max-width: 420px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
             <div style="text-align: center;">
@@ -316,12 +303,7 @@ function openAuthModal(mode) {
                 </div>
                 <div style="margin-bottom: 16px;">
                     <label style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 4px;">Password</label>
-                    <div style="position: relative; width: 100%;">
-                        <input type="password" id="authPassword" placeholder="${isLogin ? 'Enter password' : 'Min 6 characters'}" style="width: 100%; padding: 12px; padding-right: 44px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
-                        <button type="button" onclick="togglePasswordVisibility(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1rem; padding: 4px;" aria-label="Show password">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
+                    ${passwordHtml}
                 </div>
                 ${isLogin ? `
                     <div style="text-align: right; margin-bottom: 16px;">
@@ -343,6 +325,15 @@ function openAuthModal(mode) {
         </div>
     `;
     document.body.appendChild(modal);
+    
+    // 绑定密码可见切换事件
+    const toggleBtn = modal.querySelector('.password-toggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            togglePasswordVisibility(this);
+        });
+    }
     
     modal.querySelector('#closeAuthModal').addEventListener('click', () => modal.remove());
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
@@ -416,7 +407,6 @@ function openAuthModal(mode) {
 
 // ---------- 全局暴露 ----------
 window.togglePasswordVisibility = togglePasswordVisibility;
-window.createPasswordField = createPasswordField;
 
 window.ForgeAuth = {
     login,
@@ -435,7 +425,6 @@ window.ForgeAuth = {
     downloadBase64,
     getToolDisplayName,
     togglePasswordVisibility,
-    createPasswordField,
     currentUser: () => JSON.parse(localStorage.getItem('forge_user'))
 };
 
