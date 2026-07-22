@@ -46,6 +46,7 @@ jobs:
         run: |
           ls -la blog/ || echo "blog directory not found"
           ls -la blog/posts/ || echo "posts directory not found"
+          cat blog/posts.json || echo "posts.json not found"
 
       - name: Commit and push generated files
         run: |
