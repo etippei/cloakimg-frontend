@@ -122,9 +122,16 @@ def parse_issue(issue):
         date_str = datetime.now().strftime('%Y-%m-%d')
         display_date = datetime.now().strftime('%B %d, %Y')
     
-    # ===== 提取分类 =====
-    category = 'Tutorial'
+    # ===== 修复：第一步先从Issue标签读取分类（兜底逻辑）=====
+    category = 'Uncategorized'
+    # 过滤掉blog/blog-post内置标签，取第一个自定义标签作为分类
+    labels = [l.get('name', '').strip() for l in issue.get('labels', []) 
+              if l.get('name') and l.get('name') not in ['blog', 'blog-post']]
+    if labels:
+        category = labels[0]
+        print(f"     📌 Category loaded from Issue label: {category}")
     
+    # ===== 修复：第二步读取FrontMatter，优先级高于标签 =====
     clean_body_for_parse = body.lstrip()
     if clean_body_for_parse.startswith('---'):
         try:
@@ -133,17 +140,12 @@ def parse_issue(issue):
                 front_matter_text = clean_body_for_parse[3:end_of_frontmatter].strip()
                 front_matter_data = yaml.safe_load(front_matter_text)
                 if front_matter_data and isinstance(front_matter_data, dict):
-                    if 'category' in front_matter_data:
+                    if 'category' in front_matter_data and front_matter_data['category']:
+                        # FrontMatter分类覆盖标签分类
                         category = str(front_matter_data['category']).strip('"\'')
-                        print(f"     📌 Found category in Front Matter: {category}")
+                        print(f"     📌 Category overwritten by Front Matter: {category}")
         except Exception as e:
-            print(f"     ⚠️ YAML parsing error: {e}")
-    
-    if category == 'Uncategorized':
-        labels = [l.get('name', '') for l in issue.get('labels', []) if l.get('name') not in ['blog', 'blog-post']]
-        if labels:
-            category = labels[0]
-            print(f"     📌 Found category from labels: {category}")
+            print(f"     ⚠️ YAML parsing error, keep label category [{category}]: {e}")
     
     clean_body = body
     if clean_body_for_parse.startswith('---'):
@@ -162,7 +164,7 @@ def parse_issue(issue):
         excerpt = 'Read this article to learn more.'
     
     print(f"  📝 Parsed: {title}")
-    print(f"     Category: {category}")
+    print(f"     Final Category: {category}")
     print(f"     Slug: {slug}")
     
     return {
