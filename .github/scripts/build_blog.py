@@ -269,10 +269,6 @@ def generate_post_html(post):
             <h1>__TITLE__</h1>
             <div class="meta">
                 <i class="far fa-calendar"></i> __DISPLAY_DATE__
-                <span style="margin: 0 0.5rem;">·</span>
-                <i class="far fa-clock"></i> __READ_TIME__
-                <span style="margin: 0 0.5rem;">·</span>
-                <i class="far fa-user"></i> __AUTHOR__
             </div>
         </div>
 
