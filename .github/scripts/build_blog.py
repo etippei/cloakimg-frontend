@@ -14,14 +14,13 @@ from pathlib import Path
 from datetime import datetime
 
 # ============================================================
-# 调试信息 - 检查环境
+# 调试信息
 # ============================================================
 print("=" * 50)
 print("BUILD BLOG SCRIPT STARTED")
 print("=" * 50)
 print(f"Python version: {sys.version}")
 print(f"Current directory: {os.getcwd()}")
-print(f"Files in current directory: {os.listdir('.')[:20]}")
 
 # ============================================================
 # 配置
@@ -48,10 +47,12 @@ HEADERS = {
 BLOG_DIR = Path('blog')
 POSTS_DIR = BLOG_DIR / 'posts'
 INDEX_FILE = Path('blog.html')
+POSTS_JSON = BLOG_DIR / 'posts.json'
 
 print(f"BLOG_DIR: {BLOG_DIR}")
 print(f"POSTS_DIR: {POSTS_DIR}")
 print(f"INDEX_FILE: {INDEX_FILE}")
+print(f"POSTS_JSON: {POSTS_JSON}")
 
 # 创建目录
 BLOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -110,7 +111,6 @@ def parse_issue(issue):
     # 生成 slug
     slug = re.sub(r'[^a-zA-Z0-9\-]', '-', title.lower())
     slug = re.sub(r'-+', '-', slug).strip('-')
-    
     if not slug:
         slug = f"post-{issue.get('number', 0)}"
     
@@ -124,30 +124,51 @@ def parse_issue(issue):
         date_str = datetime.now().strftime('%Y-%m-%d')
         display_date = datetime.now().strftime('%B %d, %Y')
     
-    # 分类
-    labels = [l.get('name', '') for l in issue.get('labels', []) if l.get('name') != 'blog']
-    category = labels[0] if labels else 'Uncategorized'
+    # ===== 提取分类（从 YAML Front Matter 或 labels）=====
+    category = 'Uncategorized'
     
-    # 摘要
-    plain_text = re.sub(r'[#\*\`\_\[\]\(\)]', '', body)
-    excerpt = plain_text[:200].strip()
-    if len(plain_text) > 200:
+    # 1. 先从正文开头的 YAML Front Matter 中提取 category
+    front_matter_match = re.search(r'^---\s*\n(.*?)\n---\s*\n', body, re.DOTALL)
+    if front_matter_match:
+        front_matter = front_matter_match.group(1)
+        # 查找 category: "xxx" 或 category: xxx
+        cat_match = re.search(r'category:\s*["\']?([^"\'\n]+)["\']?', front_matter)
+        if cat_match:
+            category = cat_match.group(1).strip()
+    
+    # 2. 如果 Front Matter 中没有，从 Issue Labels 中获取
+    if category == 'Uncategorized':
+        labels = [l.get('name', '') for l in issue.get('labels', []) if l.get('name') != 'blog']
+        if labels:
+            category = labels[0]
+    
+    # 提取正文内容（去掉 YAML Front Matter）
+    clean_body = body
+    if front_matter_match:
+        clean_body = body.replace(front_matter_match.group(0), '').strip()
+    
+    # 摘要（从正文中提取前200个字符）
+    plain_text = re.sub(r'[#\*\`\_\[\]\(\)]', '', clean_body)
+    excerpt = plain_text[:250].strip()
+    if len(plain_text) > 250:
         excerpt += '...'
     if not excerpt:
         excerpt = 'Read this article to learn more.'
     
-    print(f"  📝 Parsed: {title} -> slug: {slug}")
+    print(f"  📝 Parsed: {title}")
+    print(f"     Category: {category}")
+    print(f"     Slug: {slug}")
     
     return {
         'id': issue.get('number'),
         'title': title,
         'slug': slug,
-        'content': body,
+        'content': clean_body,
         'excerpt': excerpt,
         'category': category,
         'date': date_str,
         'display_date': display_date,
-        'author': issue.get('user', {}).get('login', 'Anonymous'),
+        'author': issue.get('user', {}).get('login', 'CloakImg AI'),
         'created_at': issue.get('created_at')
     }
 
@@ -166,7 +187,6 @@ def generate_post_html(post):
     word_count = len(post['content'].split())
     read_time = max(1, round(word_count / 200))
     
-    # 文章页面模板
     template = '''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -299,10 +319,11 @@ def generate_post_html(post):
 
 
 def generate_index_html(posts):
-    """Generate updated blog.html with post list"""
+    """Generate updated blog.html with post list (硬编码方式)"""
     sorted_posts = sorted(posts, key=lambda x: x['created_at'], reverse=True)
-    print(f"Generating index with {len(sorted_posts)} posts...")
+    print(f"Generating blog.html with {len(sorted_posts)} posts...")
     
+    # 生成卡片 HTML
     cards = ''
     for p in sorted_posts[:20]:
         read_time = max(1, round(len(p['content'].split()) / 200))
@@ -327,20 +348,13 @@ def generate_index_html(posts):
             with open(INDEX_FILE, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            import re
             # 替换 blog grid 内容
+            import re
             content = re.sub(
-                r'(<div class="blog-grid-full" id="blogGrid">).*?(</div>)',
-                f'\\1\n{cards}\n                \\2',
+                r'(<div class="blog-grid-full" id="blogGrid">).*?(</div>\s*</div>\s*<!-- ===== RELATED TOOLS ===== -->)',
+                f'\\1\n{cards}\n            \\2',
                 content,
                 flags=re.DOTALL
-            )
-            
-            # 更新 All 按钮计数
-            content = re.sub(
-                r'(<button class="filter-btn active" data-filter="all">)All(</button>)',
-                f'\\1All ({len(sorted_posts)})\\2',
-                content
             )
             
             with open(INDEX_FILE, 'w', encoding='utf-8') as f:
@@ -369,8 +383,7 @@ def generate_posts_json(posts):
             'url': f"blog/posts/{p['slug']}.html"
         })
     
-    json_file = BLOG_DIR / 'posts.json'
-    with open(json_file, 'w', encoding='utf-8') as f:
+    with open(POSTS_JSON, 'w', encoding='utf-8') as f:
         json.dump(posts_data, f, ensure_ascii=False, indent=2)
     
     print(f"✅ Generated posts.json with {len(posts_data)} posts")
@@ -386,7 +399,6 @@ def main():
         print("✅ All dependencies imported successfully")
     except ImportError as e:
         print(f"❌ Missing dependency: {e}")
-        print("Please install: pip install markdown pyyaml frontmatter requests")
         sys.exit(1)
     
     # 获取 Issues
@@ -394,13 +406,13 @@ def main():
     
     if not issues:
         print("⚠️ No blog issues found")
-        # 创建一个占位文章
+        # 创建占位文章
         issues = [{
             'number': 0,
             'title': 'Welcome to CloakImg AI Blog',
             'body': 'This is the first post on the CloakImg AI Blog. Stay tuned for articles about AI image editing!',
             'created_at': datetime.now().isoformat(),
-            'user': {'login': 'CloakImg'},
+            'user': {'login': 'CloakImg AI'},
             'labels': [{'name': 'blog'}, {'name': 'Tutorial'}]
         }]
     
