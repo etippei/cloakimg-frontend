@@ -8,6 +8,7 @@ import sys
 import re
 import html
 import json
+import yaml
 import requests
 import markdown
 from pathlib import Path
@@ -128,24 +129,38 @@ def parse_issue(issue):
     category = 'Uncategorized'
     
     # 1. 先从正文开头的 YAML Front Matter 中提取 category
-    front_matter_match = re.search(r'^---\s*\n(.*?)\n---\s*\n', body, re.DOTALL)
-    if front_matter_match:
-        front_matter = front_matter_match.group(1)
-        # 查找 category: "xxx" 或 category: xxx
-        cat_match = re.search(r'category:\s*["\']?([^"\'\n]+)["\']?', front_matter)
-        if cat_match:
-            category = cat_match.group(1).strip()
+    clean_body_for_parse = body.lstrip()
+    if clean_body_for_parse.startswith('---'):
+        try:
+            # 找到第二个 --- 的位置
+            end_of_frontmatter = clean_body_for_parse.find('---', 3)
+            if end_of_frontmatter > 0:
+                front_matter_text = clean_body_for_parse[3:end_of_frontmatter].strip()
+                # 用 yaml 解析
+                front_matter_data = yaml.safe_load(front_matter_text)
+                if front_matter_data and isinstance(front_matter_data, dict):
+                    if 'category' in front_matter_data:
+                        category = str(front_matter_data['category']).strip('"\'')
+                        print(f"     📌 Found category in Front Matter: {category}")
+        except Exception as e:
+            print(f"     ⚠️ YAML parsing error: {e}")
     
     # 2. 如果 Front Matter 中没有，从 Issue Labels 中获取
     if category == 'Uncategorized':
-        labels = [l.get('name', '') for l in issue.get('labels', []) if l.get('name') != 'blog']
+        labels = [l.get('name', '') for l in issue.get('labels', []) if l.get('name') not in ['blog', 'blog-post']]
         if labels:
             category = labels[0]
+            print(f"     📌 Found category from labels: {category}")
     
     # 提取正文内容（去掉 YAML Front Matter）
     clean_body = body
-    if front_matter_match:
-        clean_body = body.replace(front_matter_match.group(0), '').strip()
+    if clean_body_for_parse.startswith('---'):
+        try:
+            end_of_frontmatter = clean_body_for_parse.find('---', 3)
+            if end_of_frontmatter > 0:
+                clean_body = clean_body_for_parse[end_of_frontmatter + 3:].strip()
+        except:
+            pass
     
     # 摘要（从正文中提取前200个字符）
     plain_text = re.sub(r'[#\*\`\_\[\]\(\)]', '', clean_body)
@@ -396,6 +411,7 @@ def main():
     try:
         import markdown
         import requests
+        import yaml
         print("✅ All dependencies imported successfully")
     except ImportError as e:
         print(f"❌ Missing dependency: {e}")
