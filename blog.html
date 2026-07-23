@@ -389,7 +389,7 @@
 
     <!-- ===== FILTER BAR ===== -->
     <div class="blog-filter-bar">
-        <button class="filter-btn active" data-filter="all">All (1)</button>
+        <button class="filter-btn active" data-filter="all">All</button>
         <button class="filter-btn" data-filter="Tutorial">Tutorials</button>
         <button class="filter-btn" data-filter="Tips">Tips</button>
         <button class="filter-btn" data-filter="Guide">Guides</button>
@@ -398,29 +398,13 @@
     </div>
 
     <!-- ===== BLOG GRID ===== -->
+    <!-- ===== 由 build_blog.py 脚本自动生成文章卡片 ===== -->
     <div class="blog-grid-full" id="blogGrid">
-
-                <div class="blog-card-full">
-                    <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
-                    <div class="blog-content">
-                        <div class="blog-category">Uncategorized</div>
-                        <h3 class="blog-title"><a href="blog/posts/how-to-remove-image-backgrounds-locally-with-cloakimg-ai-the-complete-guide.html">How to Remove Image Backgrounds Locally with CloakImg AI: The Complete Guide</a></h3>
-                        <p class="blog-excerpt">---
-title: How to Remove Image Backgrounds Locally with CloakImg AI: The Complete Guide
-labels: blog-post
-category: &quot;Tutorial&quot;
----
-
- How to Remove Image Backgrounds Locally with CloakImg AI: The Compl...</p>
-                        <div class="blog-meta">
-                            <span><i class="far fa-calendar"></i> July 23, 2026</span>
-                            <span><i class="far fa-clock"></i> 6 min read</span>
-                        </div>
-                        <a href="blog/posts/how-to-remove-image-backgrounds-locally-with-cloakimg-ai-the-complete-guide.html" class="blog-read-more">Read Full Article →</a>
-                    </div>
-                </div>
-
-                </div>
+        <!-- 加载中占位 -->
+        <div class="blog-loading">
+            <i class="fas fa-spinner fa-pulse fa-3x"></i>
+            <p>Loading articles...</p>
+        </div>
     </div>
 
     <!-- ===== RELATED TOOLS ===== -->
@@ -472,64 +456,76 @@ category: &quot;Tutorial&quot;
         let currentFilter = 'all';
 
         // ============================================================
-        // 从 posts.json 加载文章列表（由 GitHub Actions 自动生成）
+        // 加载文章列表
+        // 优先使用页面中已有的文章卡片（由 build_blog.py 生成）
+        // 如果没有，再从 posts.json 加载
         // ============================================================
-        async function loadArticles() {
-            try {
-                const response = await fetch('blog/posts.json');
-                if (!response.ok) {
-                    throw new Error('Failed to load posts.json');
-                }
+        function loadArticles() {
+            // 检查是否已经有文章卡片（由 Python 脚本生成）
+            const existingCards = grid.querySelectorAll('.blog-card-full');
+            if (existingCards.length > 0) {
+                // 已经有文章卡片，直接使用，不需要从 JSON 加载
+                allArticles = Array.from(existingCards);
+                updateSearchStats();
+                return;
+            }
 
-                const posts = await response.json();
+            // 如果没有文章卡片，尝试从 posts.json 加载
+            fetch('blog/posts.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load posts.json');
+                    }
+                    return response.json();
+                })
+                .then(posts => {
+                    if (posts.length === 0) {
+                        grid.innerHTML = `
+                            <div class="blog-empty">
+                                <i class="fas fa-newspaper fa-3x"></i>
+                                <p style="margin-top:1rem;">No articles published yet.</p>
+                                <p style="color:#94a3b8; font-size:0.85rem;">Check back soon for AI image editing tips!</p>
+                            </div>
+                        `;
+                        return;
+                    }
 
-                if (posts.length === 0) {
+                    // 生成文章卡片
+                    let cardsHtml = '';
+                    posts.forEach(p => {
+                        const readTime = Math.max(1, Math.round((p.excerpt || p.title).length / 200));
+                        const excerpt = p.excerpt || 'Read this article to learn more about AI image processing.';
+                        cardsHtml += `
+                            <div class="blog-card-full" data-title="${p.title.toLowerCase()}" data-category="${p.category}">
+                                <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
+                                <div class="blog-content">
+                                    <div class="blog-category">${p.category}</div>
+                                    <h3 class="blog-title"><a href="${p.url}">${p.title}</a></h3>
+                                    <p class="blog-excerpt">${excerpt}</p>
+                                    <div class="blog-meta">
+                                        <span><i class="far fa-calendar"></i> ${p.display_date}</span>
+                                        <span><i class="far fa-clock"></i> ${readTime} min read</span>
+                                    </div>
+                                    <a href="${p.url}" class="blog-read-more">Read Full Article →</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    grid.innerHTML = cardsHtml;
+                    allArticles = Array.from(grid.querySelectorAll('.blog-card-full'));
+                    updateSearchStats();
+                })
+                .catch(error => {
+                    console.error('Error loading articles:', error);
                     grid.innerHTML = `
                         <div class="blog-empty">
-                            <i class="fas fa-newspaper fa-3x"></i>
-                            <p style="margin-top:1rem;">No articles published yet.</p>
-                            <p style="color:#94a3b8; font-size:0.85rem;">Check back soon for AI image editing tips!</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // 生成文章卡片
-                let cardsHtml = '';
-                posts.forEach(p => {
-                    const readTime = Math.max(1, Math.round((p.excerpt || p.title).length / 200));
-                    const excerpt = p.excerpt || 'Read this article to learn more about AI image processing.';
-                    cardsHtml += `
-                        <div class="blog-card-full" data-title="${p.title.toLowerCase()}" data-category="${p.category}">
-                            <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
-                            <div class="blog-content">
-                                <div class="blog-category">${p.category}</div>
-                                <h3 class="blog-title"><a href="${p.url}">${p.title}</a></h3>
-                                <p class="blog-excerpt">${excerpt}</p>
-                                <div class="blog-meta">
-                                    <span><i class="far fa-calendar"></i> ${p.display_date}</span>
-                                    <span><i class="far fa-clock"></i> ${readTime} min read</span>
-                                </div>
-                                <a href="${p.url}" class="blog-read-more">Read Full Article →</a>
-                            </div>
+                            <i class="fas fa-exclamation-triangle fa-3x" style="color:#f59e0b;"></i>
+                            <p style="margin-top:1rem;">Unable to load articles.</p>
+                            <p style="color:#94a3b8; font-size:0.85rem;">Please refresh the page or try again later.</p>
                         </div>
                     `;
                 });
-
-                grid.innerHTML = cardsHtml;
-                allArticles = Array.from(grid.querySelectorAll('.blog-card-full'));
-                updateSearchStats();
-
-            } catch (error) {
-                console.error('Error loading articles:', error);
-                grid.innerHTML = `
-                    <div class="blog-empty">
-                        <i class="fas fa-exclamation-triangle fa-3x" style="color:#f59e0b;"></i>
-                        <p style="margin-top:1rem;">Unable to load articles.</p>
-                        <p style="color:#94a3b8; font-size:0.85rem;">Please refresh the page or try again later.</p>
-                    </div>
-                `;
-            }
         }
 
         // ============================================================
@@ -659,10 +655,11 @@ category: &quot;Tutorial&quot;
         // ============================================================
         // 执行加载
         // ============================================================
-        setTimeout(() => {
+        // 延迟执行，确保 DOM 完全加载
+        setTimeout(function() {
             loadArticles();
             initFilters();
-        }, 500);
+        }, 300);
     });
 </script>
 </body>
