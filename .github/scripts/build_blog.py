@@ -126,7 +126,7 @@ def parse_issue(issue):
         display_date = datetime.now().strftime('%B %d, %Y')
     
     # ===== 提取分类（从 YAML Front Matter 或 labels）=====
-    category = 'Tutorial'  # 默认分类改为 Tutorial
+    category = 'Tutorial'  # 默认分类
     
     # 1. 先从正文开头的 YAML Front Matter 中提取 category
     clean_body_for_parse = body.lstrip()
@@ -144,16 +144,11 @@ def parse_issue(issue):
             print(f"     ⚠️ YAML parsing error: {e}")
     
     # 2. 如果 Front Matter 中没有，从 Issue Labels 中获取
-    if category == 'Uncategorized' or category == 'Tutorial':
+    if category == 'Uncategorized':
         labels = [l.get('name', '') for l in issue.get('labels', []) if l.get('name') not in ['blog', 'blog-post']]
         if labels:
-            # 尝试匹配已知分类
-            known_categories = ['Tutorial', 'Tips', 'Guide', 'Performance', 'Trends']
-            for label in labels:
-                if label in known_categories:
-                    category = label
-                    print(f"     📌 Found category from labels: {category}")
-                    break
+            category = labels[0]
+            print(f"     📌 Found category from labels: {category}")
     
     # 提取正文内容（去掉 YAML Front Matter）
     clean_body = body
@@ -165,10 +160,10 @@ def parse_issue(issue):
         except:
             pass
     
-    # 摘要（从正文中提取前200个字符）
+    # 摘要（从正文中提取前150个字符）
     plain_text = re.sub(r'[#\*\`\_\[\]\(\)]', '', clean_body)
-    excerpt = plain_text[:200].strip()
-    if len(plain_text) > 200:
+    excerpt = plain_text[:150].strip()
+    if len(plain_text) > 150:
         excerpt += '...'
     if not excerpt:
         excerpt = 'Read this article to learn more.'
@@ -328,11 +323,11 @@ def generate_post_html(post):
 
 
 def generate_index_html(posts):
-    """Generate updated blog.html with post list (硬编码方式)"""
+    """Generate updated blog.html with post list"""
     sorted_posts = sorted(posts, key=lambda x: x['created_at'], reverse=True)
     print(f"Generating blog.html with {len(sorted_posts)} posts...")
     
-    # 生成卡片 HTML（不包含阅读时间）
+    # 生成卡片 HTML - 只包含日期，不包含阅读时间和作者
     cards = ''
     for p in sorted_posts[:20]:
         cards += f'''
@@ -357,12 +352,12 @@ def generate_index_html(posts):
             
             # 替换 blog grid 内容
             import re
-            content = re.sub(
-                r'(<div class="blog-grid-full" id="blogGrid">).*?(</div>\s*</div>\s*<!-- ===== RELATED TOOLS ===== -->)',
-                f'\\1\n{cards}\n            \\2',
-                content,
-                flags=re.DOTALL
-            )
+            
+            # 先提取出当前页面中的 filter bar 和 related tools 部分，保留它们
+            # 只替换 #blogGrid 内部的内容
+            pattern = r'(<div class="blog-grid-full" id="blogGrid">).*?(</div>\s*</div>\s*<!-- ===== RELATED TOOLS ===== -->)'
+            replacement = f'\\1\n{cards}\n            \\2'
+            content = re.sub(pattern, replacement, content, flags=re.DOTALL)
             
             with open(INDEX_FILE, 'w', encoding='utf-8') as f:
                 f.write(content)
