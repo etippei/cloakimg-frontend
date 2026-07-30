@@ -151,17 +151,16 @@
             border-color: #7c3aed;
         }
 
-        /* ===== 一行3篇文章 ===== */
         .blog-grid-full {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.8rem;
             margin: 1.5rem 0;
         }
         .blog-card-full {
             background: white;
             border-radius: 1.5rem;
-            padding: 1.5rem;
+            padding: 1.8rem;
             border: 1px solid #eef2f6;
             border-left: 4px solid #2563eb;
             box-shadow: 0 4px 12px rgba(0,0,0,0.02);
@@ -192,12 +191,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             background: linear-gradient(135deg, #2563eb15, #7c3aed15);
-            border-radius: 12px;
-            margin-bottom: 0.8rem;
-            font-size: 1.4rem;
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
             color: #2563eb;
         }
         .blog-content {
@@ -207,20 +206,20 @@
         }
         .blog-category {
             display: inline-block;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 600;
             color: #2563eb;
             background: #eef2ff;
-            padding: 0.15rem 0.7rem;
+            padding: 0.2rem 0.8rem;
             border-radius: 30px;
             align-self: flex-start;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
         }
         .blog-title {
-            font-size: 1.05rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 0.4rem;
-            line-height: 1.3;
+            margin-bottom: 0.6rem;
+            line-height: 1.4;
         }
         .blog-title a {
             color: #0f172a;
@@ -231,28 +230,24 @@
         }
         .blog-excerpt {
             color: #475569;
-            font-size: 0.85rem;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            line-height: 1.6;
             flex: 1;
-            margin-bottom: 0.8rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            margin-bottom: 1rem;
         }
         .blog-meta {
             display: flex;
-            gap: 1rem;
-            font-size: 0.75rem;
+            gap: 1.2rem;
+            font-size: 0.8rem;
             color: #94a3b8;
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.8rem;
         }
         .blog-meta i { margin-right: 4px; }
         .blog-read-more {
             color: #2563eb;
             font-weight: 600;
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             transition: all 0.2s;
             align-self: flex-start;
         }
@@ -351,16 +346,9 @@
             border-top: 1px solid #f1f5f9;
         }
 
-        @media (max-width: 992px) {
-            .blog-grid-full {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
         @media (max-width: 768px) {
             .blog-hero h1 { font-size: 1.8rem; }
-            .blog-grid-full {
-                grid-template-columns: 1fr;
-            }
+            .blog-grid-full { grid-template-columns: 1fr; }
             .related-tools-grid { grid-template-columns: repeat(2, 1fr); }
             .footer-content { flex-direction: column; text-align: center; }
             .footer-right { flex-wrap: wrap; justify-content: center; }
@@ -402,7 +390,7 @@
     <!-- ===== FILTER BAR ===== -->
     <div class="blog-filter-bar">
         <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="Tutorial">Tutorial</button>
+        <button class="filter-btn" data-filter="Tutorial">Tutorials</button>
         <button class="filter-btn" data-filter="Tips">Tips</button>
         <button class="filter-btn" data-filter="Guide">Guides</button>
         <button class="filter-btn" data-filter="Performance">Performance</button>
@@ -410,69 +398,13 @@
     </div>
 
     <!-- ===== BLOG GRID ===== -->
+    <!-- ===== 由 build_blog.py 脚本自动生成文章卡片 ===== -->
     <div class="blog-grid-full" id="blogGrid">
-
-                <div class="blog-card-full">
-                    <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
-                    <div class="blog-content">
-                        <div class="blog-category">Tutorial</div>
-                        <h3 class="blog-title"><a href="blog/posts/master-image-compression-reduce-file-size-without-sacrificing-quality.html">Master Image Compression: Reduce File Size Without Sacrificing Quality</a></h3>
-                        <p class="blog-excerpt">Master Image Compression: Reduce File Size Without Sacrificing Quality
-
-In today&#x27;s digital landscape, image file size matters more than ever. Whether...</p>
-                        <div class="blog-meta">
-                            <span><i class="far fa-calendar"></i> July 30, 2026</span>
-                        </div>
-                        <a href="blog/posts/master-image-compression-reduce-file-size-without-sacrificing-quality.html" class="blog-read-more">Read Full Article →</a>
-                    </div>
-                </div>
-
-                <div class="blog-card-full">
-                    <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
-                    <div class="blog-content">
-                        <div class="blog-category">Tutorial</div>
-                        <h3 class="blog-title"><a href="blog/posts/convert-png-to-jpg-like-a-pro-the-complete-local-conversion-guide.html">Convert PNG to JPG Like a Pro: The Complete Local Conversion Guide</a></h3>
-                        <p class="blog-excerpt">Convert PNG to JPG Like a Pro: The Complete Local Conversion Guide
-
-If you work with digital images regularly, you&#x27;ve likely encountered the age-old...</p>
-                        <div class="blog-meta">
-                            <span><i class="far fa-calendar"></i> July 27, 2026</span>
-                        </div>
-                        <a href="blog/posts/convert-png-to-jpg-like-a-pro-the-complete-local-conversion-guide.html" class="blog-read-more">Read Full Article →</a>
-                    </div>
-                </div>
-
-                <div class="blog-card-full">
-                    <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
-                    <div class="blog-content">
-                        <div class="blog-category">Tutorial</div>
-                        <h3 class="blog-title"><a href="blog/posts/enhance-your-images-with-ai-upscaler-the-complete-local-super-resolution-guide.html">Enhance Your Images with AI Upscaler: The Complete Local Super-Resolution Guide</a></h3>
-                        <p class="blog-excerpt">Enhance Your Images with AI Upscaler: The Complete Local Super-Resolution Guide
-
-We&#x27;ve all been there—you find the perfect image for your project, on...</p>
-                        <div class="blog-meta">
-                            <span><i class="far fa-calendar"></i> July 24, 2026</span>
-                        </div>
-                        <a href="blog/posts/enhance-your-images-with-ai-upscaler-the-complete-local-super-resolution-guide.html" class="blog-read-more">Read Full Article →</a>
-                    </div>
-                </div>
-
-                <div class="blog-card-full">
-                    <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
-                    <div class="blog-content">
-                        <div class="blog-category">Tutorial</div>
-                        <h3 class="blog-title"><a href="blog/posts/how-to-remove-image-backgrounds-locally-with-cloakimg-ai-the-complete-guide.html">How to Remove Image Backgrounds Locally with CloakImg AI: The Complete Guide</a></h3>
-                        <p class="blog-excerpt">How to Remove Image Backgrounds Locally with CloakImg AI: The Complete Guide
-
-Removing the background from an image is one of the most common yet ted...</p>
-                        <div class="blog-meta">
-                            <span><i class="far fa-calendar"></i> July 23, 2026</span>
-                        </div>
-                        <a href="blog/posts/how-to-remove-image-backgrounds-locally-with-cloakimg-ai-the-complete-guide.html" class="blog-read-more">Read Full Article →</a>
-                    </div>
-                </div>
-
-            </div>
+        <!-- 加载中占位 -->
+        <div class="blog-loading">
+            <i class="fas fa-spinner fa-pulse fa-3x"></i>
+            <p>Loading articles...</p>
+        </div>
     </div>
 
     <!-- ===== RELATED TOOLS ===== -->
@@ -524,22 +456,21 @@ Removing the background from an image is one of the most common yet ted...</p>
         let currentFilter = 'all';
 
         // ============================================================
-        // 加载文章列表（优先使用硬编码卡片）
+        // 加载文章列表
+        // 优先使用页面中已有的文章卡片（由 build_blog.py 生成）
+        // 如果没有，再从 posts.json 加载
         // ============================================================
         function loadArticles() {
-            // 1. 检查是否已经有文章卡片（由 Python 脚本硬编码生成）
-            const existingCards = document.querySelectorAll('.blog-card-full');
-            
+            // 检查是否已经有文章卡片（由 Python 脚本生成）
+            const existingCards = grid.querySelectorAll('.blog-card-full');
             if (existingCards.length > 0) {
-                // 直接使用现有的卡片，不覆盖
+                // 已经有文章卡片，直接使用，不需要从 JSON 加载
                 allArticles = Array.from(existingCards);
-                updateCategoryCounts();
                 updateSearchStats();
-                console.log(`✅ Using existing blog cards (${allArticles.length} articles)`);
                 return;
             }
 
-            // 2. 如果没有硬编码卡片，尝试从 posts.json 加载
+            // 如果没有文章卡片，尝试从 posts.json 加载
             fetch('blog/posts.json')
                 .then(response => {
                     if (!response.ok) {
@@ -559,17 +490,21 @@ Removing the background from an image is one of the most common yet ted...</p>
                         return;
                     }
 
+                    // 生成文章卡片
                     let cardsHtml = '';
                     posts.forEach(p => {
+                        const readTime = Math.max(1, Math.round((p.excerpt || p.title).length / 200));
+                        const excerpt = p.excerpt || 'Read this article to learn more about AI image processing.';
                         cardsHtml += `
                             <div class="blog-card-full" data-title="${p.title.toLowerCase()}" data-category="${p.category}">
                                 <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
                                 <div class="blog-content">
                                     <div class="blog-category">${p.category}</div>
                                     <h3 class="blog-title"><a href="${p.url}">${p.title}</a></h3>
-                                    <p class="blog-excerpt">${p.excerpt}</p>
+                                    <p class="blog-excerpt">${excerpt}</p>
                                     <div class="blog-meta">
                                         <span><i class="far fa-calendar"></i> ${p.display_date}</span>
+                                        <span><i class="far fa-clock"></i> ${readTime} min read</span>
                                     </div>
                                     <a href="${p.url}" class="blog-read-more">Read Full Article →</a>
                                 </div>
@@ -579,31 +514,18 @@ Removing the background from an image is one of the most common yet ted...</p>
 
                     grid.innerHTML = cardsHtml;
                     allArticles = Array.from(grid.querySelectorAll('.blog-card-full'));
-                    updateCategoryCounts();
                     updateSearchStats();
-                    console.log(`✅ Loaded ${allArticles.length} articles from posts.json`);
                 })
                 .catch(error => {
                     console.error('Error loading articles:', error);
-                    if (grid.querySelectorAll('.blog-card-full').length === 0) {
-                        grid.innerHTML = `
-                            <div class="blog-empty">
-                                <i class="fas fa-exclamation-triangle fa-3x" style="color:#f59e0b;"></i>
-                                <p style="margin-top:1rem;">Unable to load articles.</p>
-                                <p style="color:#94a3b8; font-size:0.85rem;">Please refresh the page or try again later.</p>
-                            </div>
-                        `;
-                    }
+                    grid.innerHTML = `
+                        <div class="blog-empty">
+                            <i class="fas fa-exclamation-triangle fa-3x" style="color:#f59e0b;"></i>
+                            <p style="margin-top:1rem;">Unable to load articles.</p>
+                            <p style="color:#94a3b8; font-size:0.85rem;">Please refresh the page or try again later.</p>
+                        </div>
+                    `;
                 });
-        }
-
-        // ============================================================
-        // 更新分类按钮 - 不显示数量
-        // ============================================================
-        function updateCategoryCounts() {
-            // 不更新任何按钮的文字，保持原样
-            // 这样 All 按钮不会显示 (1)
-            console.log('Category counts updated (numbers hidden)');
         }
 
         // ============================================================
@@ -701,23 +623,10 @@ Removing the background from an image is one of the most common yet ted...</p>
 
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const filter = this.dataset.filter;
-
+                    currentFilter = this.dataset.filter;
                     filterBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-
-                    allArticles.forEach(card => {
-                        const category = card.dataset.category || 'Uncategorized';
-                        if (filter === 'all') {
-                            card.classList.remove('hidden');
-                        } else {
-                            if (category === filter) {
-                                card.classList.remove('hidden');
-                            } else {
-                                card.classList.add('hidden');
-                            }
-                        }
-                    });
+                    performSearch(searchInput.value);
                 });
             });
         }
@@ -746,10 +655,11 @@ Removing the background from an image is one of the most common yet ted...</p>
         // ============================================================
         // 执行加载
         // ============================================================
-        setTimeout(() => {
+        // 延迟执行，确保 DOM 完全加载
+        setTimeout(function() {
             loadArticles();
             initFilters();
-        }, 500);
+        }, 300);
     });
 </script>
 </body>
