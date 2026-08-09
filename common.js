@@ -23,7 +23,12 @@ async function apiRequest(endpoint, options = {}) {
     
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(data.error || 'Request failed');
+        // 将响应数据中的 code 一并抛出，方便前端判断
+        const error = new Error(data.error || 'Request failed');
+        error.code = data.code;
+        error.status = response.status;
+        error.data = data;
+        throw error;
     }
     return data;
 }
@@ -35,16 +40,34 @@ async function register(email, password) {
     });
 }
 
+// ---------- 修改后的登录函数 ----------
 async function login(email, password) {
-    const result = await apiRequest('/auth/login', {
-        method: 'POST',
-        body: { email, password }
-    });
-    if (result.token) {
-        localStorage.setItem('forge_token', result.token);
-        localStorage.setItem('forge_user', JSON.stringify(result.user));
+    try {
+        const result = await apiRequest('/auth/login', {
+            method: 'POST',
+            body: { email, password }
+        });
+        
+        if (result.token) {
+            localStorage.setItem('forge_token', result.token);
+            localStorage.setItem('forge_user', JSON.stringify(result.user));
+            return { success: true, data: result };
+        }
+        return { success: false, error: result.error, code: result.code };
+    } catch (error) {
+        // 解析错误信息，判断是否为未验证
+        if (error.code === 'EMAIL_NOT_VERIFIED' || 
+            (error.message && error.message.includes('verify your email'))) {
+            return { 
+                success: false, 
+                error: error.message || 'Please verify your email first',
+                code: 'EMAIL_NOT_VERIFIED',
+                email: email,
+                data: error.data
+            };
+        }
+        return { success: false, error: error.message || 'Login failed' };
     }
-    return result;
 }
 
 function logout() {
@@ -72,6 +95,19 @@ async function changePassword(currentPassword, newPassword) {
         method: 'POST',
         body: { current_password: currentPassword, new_password: newPassword }
     });
+}
+
+// ---------- 重新发送验证邮件 ----------
+async function resendVerification(email) {
+    try {
+        const result = await apiRequest('/auth/resend-verification', {
+            method: 'POST',
+            body: { email }
+        });
+        return { success: true, message: result.message };
+    } catch (error) {
+        return { success: false, error: error.message || 'Failed to resend verification' };
+    }
 }
 
 async function getUsage() {
@@ -251,7 +287,6 @@ function renderAuthWidget() {
 
 // ---------- 密码可见切换函数 ----------
 function togglePasswordVisibility(button) {
-    // 查找父容器中的 input
     const wrapper = button.closest('.password-wrapper');
     if (!wrapper) return;
     const input = wrapper.querySelector('input');
@@ -268,7 +303,7 @@ function togglePasswordVisibility(button) {
     }
 }
 
-// ---------- 认证弹窗（包含密码可见切换） ----------
+// ---------- 认证弹窗（修改后） ----------
 function openAuthModal(mode) {
     const modal = document.createElement('div');
     modal.style.cssText = `
@@ -279,7 +314,6 @@ function openAuthModal(mode) {
     
     const isLogin = mode === 'login';
     
-    // 密码输入框的 HTML（带可见切换按钮）
     const passwordHtml = `
         <div class="password-wrapper" style="position: relative; width: 100%;">
             <input type="password" id="authPassword" placeholder="${isLogin ? 'Enter password' : 'Min 6 characters'}" style="width: 100%; padding: 12px; padding-right: 44px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 1rem; box-sizing: border-box;">
@@ -344,23 +378,80 @@ function openAuthModal(mode) {
         openAuthModal(isLogin ? 'signup' : 'login');
     });
     
+    // ---------- 登录表单提交逻辑（修改后） ----------
     modal.querySelector('#authForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = modal.querySelector('#authEmail').value;
+        const email = modal.querySelector('#authEmail').value.trim();
         const password = modal.querySelector('#authPassword').value;
         const messageEl = modal.querySelector('#authMessage');
         const submitBtn = modal.querySelector('button[type="submit"]');
         
+        // 清空之前的消息
+        messageEl.innerHTML = '';
+        
         try {
             if (isLogin) {
                 const result = await login(email, password);
-                messageEl.innerHTML = '✅ Login successful!';
-                messageEl.style.color = '#22c55e';
-                setTimeout(() => {
-                    modal.remove();
-                    window.location.reload();
-                }, 1000);
+                
+                // 🔥 检查是否为"未验证"状态
+                if (result.code === 'EMAIL_NOT_VERIFIED') {
+                    // 显示未验证提示 + 重新发送按钮
+                    messageEl.innerHTML = `
+                        <div style="background: #fef3c7; border-radius: 12px; padding: 14px; text-align: left; border: 1px solid #f59e0b;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="font-size: 1.5rem;">📧</span>
+                                <span style="font-weight: 600; color: #92400e;">Email Not Verified</span>
+                            </div>
+                            <p style="color: #78350f; font-size: 0.85rem; margin: 4px 0;">
+                                Please verify your email address to login. Check your inbox for the verification link.
+                            </p>
+                            <button id="resendVerifyBtn" style="margin-top: 10px; padding: 8px 20px; background: #2563eb; color: white; border: none; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+                                <i class="fas fa-paper-plane"></i> Resend Verification Email
+                            </button>
+                            <div id="resendStatus" style="margin-top: 8px; font-size: 0.8rem; color: #64748b;"></div>
+                        </div>
+                    `;
+                    
+                    // 绑定重新发送按钮
+                    const resendBtn = modal.querySelector('#resendVerifyBtn');
+                    const resendStatus = modal.querySelector('#resendStatus');
+                    
+                    resendBtn.addEventListener('click', async function() {
+                        resendBtn.disabled = true;
+                        resendBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Sending...';
+                        resendStatus.textContent = '';
+                        
+                        const resendResult = await resendVerification(email);
+                        
+                        if (resendResult.success) {
+                            resendStatus.innerHTML = '✅ Verification email resent! Please check your inbox.';
+                            resendStatus.style.color = '#16a34a';
+                            resendBtn.innerHTML = '✅ Sent!';
+                        } else {
+                            resendStatus.innerHTML = '❌ ' + (resendResult.error || 'Failed to send. Please try again.');
+                            resendStatus.style.color = '#dc2626';
+                            resendBtn.disabled = false;
+                            resendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Resend Verification Email';
+                        }
+                    });
+                    
+                    return; // 不关闭弹窗
+                }
+                
+                // 登录成功
+                if (result.success) {
+                    messageEl.innerHTML = '✅ Login successful!';
+                    messageEl.style.color = '#22c55e';
+                    setTimeout(() => {
+                        modal.remove();
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    messageEl.innerHTML = `❌ ${result.error || 'Login failed'}`;
+                    messageEl.style.color = '#ef4444';
+                }
             } else {
+                // 注册逻辑
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating account...';
                 
@@ -415,6 +506,7 @@ window.ForgeAuth = {
     forgotPassword,
     resetPassword,
     changePassword,
+    resendVerification,
     getUsage,
     uploadToVPS,
     pollResult,
@@ -431,5 +523,17 @@ window.ForgeAuth = {
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
         window.ForgeAuth.renderAuthWidget();
+    }
+    
+    // 检查 URL 参数，如果有 verified=1，自动打开登录弹窗
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('verified') === '1') {
+        setTimeout(() => {
+            if (window.ForgeAuth && window.ForgeAuth.openAuthModal) {
+                window.ForgeAuth.openAuthModal('login');
+                const newUrl = window.location.pathname + window.location.hash;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        }, 500);
     }
 });
