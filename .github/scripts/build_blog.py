@@ -122,7 +122,7 @@ def parse_issue(issue):
         date_str = datetime.now().strftime('%Y-%m-%d')
         display_date = datetime.now().strftime('%B %d, %Y')
     
-    # ===== 提取分类（参考另一个网站的逻辑）=====
+    # ===== 提取分类 =====
     category = 'Tutorial'  # 默认分类
     
     # 1. 从 Issue 标签中提取（过滤掉 blog）
@@ -146,7 +146,7 @@ def parse_issue(issue):
         except Exception as e:
             print(f"     ⚠️ YAML parsing error: {e}")
     
-    # 提取正文内容（去掉 YAML Front Matter）
+    # 提取正文内容
     clean_body = body
     if clean_body_for_parse.startswith('---'):
         try:
@@ -173,7 +173,7 @@ def parse_issue(issue):
         'slug': slug,
         'content': clean_body,
         'excerpt': excerpt,
-        'category': category,
+        'category': category,  # ✅ 确保 category 字段存在
         'date': date_str,
         'display_date': display_date,
         'author': issue.get('user', {}).get('login', 'CloakImg AI'),
@@ -347,18 +347,82 @@ def generate_index_html(posts):
                 content = f.read()
             
             import re
-            pattern = r'(<div class="blog-grid-full" id="blogGrid">).*?(</div>\s*</div>\s*<!-- ===== RELATED TOOLS ===== -->)'
-            replacement = f'\\1\n{cards}\n            \\2'
-            content = re.sub(pattern, replacement, content, flags=re.DOTALL)
             
-            with open(INDEX_FILE, 'w', encoding='utf-8') as f:
-                f.write(content)
-            print(f"✅ Updated {INDEX_FILE}")
+            # ✅ 修复：使用更精确的匹配方式
+            start_marker = '<div class="blog-grid-full" id="blogGrid">'
+            end_marker = '<!-- ===== RELATED TOOLS ===== -->'
+            
+            start_pos = content.find(start_marker)
+            end_pos = content.find(end_marker, start_pos)
+            
+            if start_pos != -1 and end_pos != -1:
+                # 找到开始标记后面的位置
+                start_pos = start_pos + len(start_marker)
+                # 替换中间的内容
+                new_content = content[:start_pos] + '\n' + cards + '\n            ' + content[end_pos:]
+                with open(INDEX_FILE, 'w', encoding='utf-8') as f:
+                    f.write(new_content)
+                print(f"✅ Updated {INDEX_FILE}")
+            else:
+                # 如果标记找不到，写入完整的页面内容
+                print(f"⚠️ Could not find blog grid markers, rebuilding entire page...")
+                # 这里可以写一个完整的 fallback 模板
+                # 或者创建一个新的 blog.html 文件
+                rebuild_complete_blog_html(sorted_posts)
         else:
-            print(f"⚠️ {INDEX_FILE} not found!")
+            print(f"⚠️ {INDEX_FILE} not found! Creating new file...")
+            rebuild_complete_blog_html(sorted_posts)
             
     except Exception as e:
         print(f"❌ Error updating index: {e}")
+
+
+def rebuild_complete_blog_html(posts):
+    """Fallback: 重建完整的 blog.html"""
+    cards = ''
+    for p in posts[:20]:
+        cards += f'''
+                <div class="blog-card-full">
+                    <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="blog-content">
+                        <div class="blog-category">{html.escape(p['category'])}</div>
+                        <h3 class="blog-title"><a href="blog/posts/{p['slug']}.html">{html.escape(p['title'])}</a></h3>
+                        <p class="blog-excerpt">{html.escape(p['excerpt'])}</p>
+                        <div class="blog-meta">
+                            <span><i class="far fa-calendar"></i> {p['display_date']}</span>
+                        </div>
+                        <a href="blog/posts/{p['slug']}.html" class="blog-read-more">Read Full Article →</a>
+                    </div>
+                </div>
+'''
+    
+    # 基础 blog.html 模板
+    blog_html = f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - CloakImg AI</title>
+    <link rel="stylesheet" href="common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <header class="site-header">...</header>
+    <div class="blog-hero">...</div>
+    <div class="blog-grid-full" id="blogGrid">
+{cards}
+    </div>
+    <footer>...</footer>
+</div>
+<script src="common.js"></script>
+</body>
+</html>'''
+    
+    with open(INDEX_FILE, 'w', encoding='utf-8') as f:
+        f.write(blog_html)
+    print(f"✅ Created {INDEX_FILE}")
 
 
 def generate_posts_json(posts):
@@ -370,7 +434,7 @@ def generate_posts_json(posts):
         posts_data.append({
             'slug': p['slug'],
             'title': p['title'],
-            'category': p['category'],  # ✅ 直接使用 p['category']
+            'category': p['category'],  # ✅ 安全访问，p['category'] 一定存在
             'date': p['date'],
             'display_date': p['display_date'],
             'excerpt': p['excerpt'],
