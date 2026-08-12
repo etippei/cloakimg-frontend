@@ -110,6 +110,26 @@ async function resendVerification(email) {
     }
 }
 
+// ---------- 前端验证邮箱（新增） ----------
+async function verifyEmail(token) {
+    try {
+        const result = await apiRequest(`/auth/verify?token=${token}`, {
+            method: 'GET'
+        });
+        return { success: true, data: result };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+// ---------- 前端重置密码（新增） ----------
+async function handleResetPassword(token, newPassword) {
+    return await apiRequest('/auth/reset-password', {
+        method: 'POST',
+        body: { token, newPassword }
+    });
+}
+
 async function getUsage() {
     return await apiRequest('/usage', { method: 'GET' });
 }
@@ -303,7 +323,7 @@ function togglePasswordVisibility(button) {
     }
 }
 
-// ---------- 认证弹窗（修改后） ----------
+// ---------- 认证弹窗 ----------
 function openAuthModal(mode) {
     const modal = document.createElement('div');
     modal.style.cssText = `
@@ -378,7 +398,7 @@ function openAuthModal(mode) {
         openAuthModal(isLogin ? 'signup' : 'login');
     });
     
-    // ---------- 登录表单提交逻辑（修改后） ----------
+    // ---------- 登录表单提交逻辑 ----------
     modal.querySelector('#authForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = modal.querySelector('#authEmail').value.trim();
@@ -393,9 +413,7 @@ function openAuthModal(mode) {
             if (isLogin) {
                 const result = await login(email, password);
                 
-                // 🔥 检查是否为"未验证"状态
                 if (result.code === 'EMAIL_NOT_VERIFIED') {
-                    // 显示未验证提示 + 重新发送按钮
                     messageEl.innerHTML = `
                         <div style="background: #fef3c7; border-radius: 12px; padding: 14px; text-align: left; border: 1px solid #f59e0b;">
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
@@ -412,7 +430,6 @@ function openAuthModal(mode) {
                         </div>
                     `;
                     
-                    // 绑定重新发送按钮
                     const resendBtn = modal.querySelector('#resendVerifyBtn');
                     const resendStatus = modal.querySelector('#resendStatus');
                     
@@ -435,10 +452,9 @@ function openAuthModal(mode) {
                         }
                     });
                     
-                    return; // 不关闭弹窗
+                    return;
                 }
                 
-                // 登录成功
                 if (result.success) {
                     messageEl.innerHTML = '✅ Login successful!';
                     messageEl.style.color = '#22c55e';
@@ -451,7 +467,6 @@ function openAuthModal(mode) {
                     messageEl.style.color = '#ef4444';
                 }
             } else {
-                // 注册逻辑
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating account...';
                 
@@ -496,8 +511,111 @@ function openAuthModal(mode) {
     });
 }
 
+// ============================================
+// 处理 URL 参数（验证 + 重置密码）
+// ============================================
+
+// ---------- 处理邮箱验证 ----------
+async function handleEmailVerification(token) {
+    const result = await verifyEmail(token);
+    if (result.success) {
+        window.location.href = '/index.html?verified=1';
+    } else {
+        alert('Verification failed: ' + (result.error || 'Invalid token'));
+    }
+}
+
+// ---------- 显示重置密码弹窗 ----------
+function showResetPasswordModal(token) {
+    // 如果已经存在弹窗，先移除
+    const existing = document.querySelector('.reset-modal-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'reset-modal-overlay';
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+        z-index: 1001;
+    `;
+    overlay.innerHTML = `
+        <div style="background: white; border-radius: 24px; padding: 40px; max-width: 420px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
+            <h2 style="text-align:center; margin-bottom: 8px;">Reset Password</h2>
+            <p style="text-align:center; color:#64748b; margin-bottom:20px;">Enter your new password</p>
+            <input type="password" id="resetNewPassword" placeholder="New password (min 6 chars)" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:12px; font-size:1rem; box-sizing:border-box;">
+            <input type="password" id="resetConfirmPassword" placeholder="Confirm password" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:16px; font-size:1rem; box-sizing:border-box;">
+            <button id="resetSubmitBtn" style="width:100%; padding:14px; background:linear-gradient(135deg,#2563eb,#7c3aed); color:white; border:none; border-radius:40px; font-size:1rem; font-weight:600; cursor:pointer;">Reset Password</button>
+            <div id="resetMessage" style="margin-top:12px; text-align:center; font-size:0.85rem;"></div>
+            <button onclick="this.closest('.reset-modal-overlay').remove()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:20px; cursor:pointer; color:#94a3b8;">×</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const submitBtn = overlay.querySelector('#resetSubmitBtn');
+    const messageEl = overlay.querySelector('#resetMessage');
+
+    submitBtn.addEventListener('click', async function() {
+        const newPwd = overlay.querySelector('#resetNewPassword').value;
+        const confirmPwd = overlay.querySelector('#resetConfirmPassword').value;
+
+        if (newPwd.length < 6) {
+            messageEl.innerHTML = '<span style="color:#ef4444;">Password must be at least 6 characters</span>';
+            return;
+        }
+        if (newPwd !== confirmPwd) {
+            messageEl.innerHTML = '<span style="color:#ef4444;">Passwords do not match</span>';
+            return;
+        }
+
+        try {
+            const result = await handleResetPassword(token, newPwd);
+            messageEl.innerHTML = '<span style="color:#22c55e;">✅ Password reset successfully!</span>';
+            setTimeout(() => {
+                overlay.remove();
+                window.location.href = '/index.html?verified=1';
+            }, 1500);
+        } catch (error) {
+            messageEl.innerHTML = `<span style="color:#ef4444;">❌ ${error.message || 'Reset failed'}</span>`;
+        }
+    });
+}
+
+// ---------- 页面加载检测 ----------
+document.addEventListener('DOMContentLoaded', function() {
+    // 渲染认证组件
+    if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
+        window.ForgeAuth.renderAuthWidget();
+    }
+
+    // 检查 URL 参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action');
+    const token = urlParams.get('token');
+
+    // 处理邮箱验证
+    if (action === 'verify' && token) {
+        handleEmailVerification(token);
+    }
+    // 处理重置密码
+    else if (action === 'resetpwd' && token) {
+        showResetPasswordModal(token);
+    }
+    // 验证成功，弹出登录窗
+    else if (urlParams.get('verified') === '1') {
+        setTimeout(() => {
+            if (window.ForgeAuth && window.ForgeAuth.openAuthModal) {
+                window.ForgeAuth.openAuthModal('login');
+                const newUrl = window.location.pathname + window.location.hash;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        }, 500);
+    }
+});
+
 // ---------- 全局暴露 ----------
 window.togglePasswordVisibility = togglePasswordVisibility;
+window.showResetPasswordModal = showResetPasswordModal;
+window.handleEmailVerification = handleEmailVerification;
 
 window.ForgeAuth = {
     login,
@@ -507,6 +625,8 @@ window.ForgeAuth = {
     resetPassword,
     changePassword,
     resendVerification,
+    verifyEmail,
+    handleResetPassword,
     getUsage,
     uploadToVPS,
     pollResult,
@@ -519,21 +639,3 @@ window.ForgeAuth = {
     togglePasswordVisibility,
     currentUser: () => JSON.parse(localStorage.getItem('forge_user'))
 };
-
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
-        window.ForgeAuth.renderAuthWidget();
-    }
-    
-    // 检查 URL 参数，如果有 verified=1，自动打开登录弹窗
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('verified') === '1') {
-        setTimeout(() => {
-            if (window.ForgeAuth && window.ForgeAuth.openAuthModal) {
-                window.ForgeAuth.openAuthModal('login');
-                const newUrl = window.location.pathname + window.location.hash;
-                window.history.replaceState({}, document.title, newUrl);
-            }
-        }, 500);
-    }
-});
