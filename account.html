@@ -165,7 +165,6 @@
             margin-top: 4px;
         }
 
-        /* 密码输入框容器 */
         .password-wrapper {
             position: relative;
             width: 100%;
@@ -283,6 +282,9 @@
 
 <script src="common.js"></script>
 <script>
+    // ✅ 使用 common.js 中的 API_BASE
+    const API_BASE = window.API_BASE || 'https://cloakimg-api.etiplpl.workers.dev/api';
+
     document.addEventListener('DOMContentLoaded', function() {
         if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
             window.ForgeAuth.renderAuthWidget();
@@ -309,7 +311,6 @@
         }
     }
 
-    // 暴露到全局
     window.togglePasswordVisibility = togglePasswordVisibility;
 
     async function loadAccountInfo() {
@@ -329,7 +330,8 @@
         }
 
         try {
-            const response = await fetch('/api/auth/me', {
+            // ✅ 修改：使用完整 API 地址
+            const response = await fetch(API_BASE + '/auth/me', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('forge_token')}`
                 }
@@ -488,7 +490,8 @@
                 msgEl.innerHTML = '<span style="color:#2563eb;"><i class="fas fa-spinner fa-pulse"></i> Updating...</span>';
 
                 try {
-                    const response = await fetch('/api/auth/change-password', {
+                    // ✅ 修改：使用完整 API 地址
+                    const response = await fetch(API_BASE + '/auth/change-password', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
