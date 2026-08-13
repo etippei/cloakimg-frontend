@@ -282,8 +282,9 @@
 
 <script src="common.js"></script>
 <script>
-    // ✅ 使用 common.js 中的 API_BASE
-    //const API_BASE = window.API_BASE || 'https://cloakimg-api.etiplpl.workers.dev/api';
+    // ✅ 不需要重新声明 API_BASE，common.js 中已经有
+    // common.js 中定义了: const API_BASE = 'https://cloakimg-api.etiplpl.workers.dev/api';
+    // 直接使用即可
 
     document.addEventListener('DOMContentLoaded', function() {
         if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
@@ -330,7 +331,7 @@
         }
 
         try {
-            // ✅ 修改：使用完整 API 地址
+            // ✅ 直接使用 common.js 中的 API_BASE
             const response = await fetch(API_BASE + '/auth/me', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('forge_token')}`
@@ -490,7 +491,7 @@
                 msgEl.innerHTML = '<span style="color:#2563eb;"><i class="fas fa-spinner fa-pulse"></i> Updating...</span>';
 
                 try {
-                    // ✅ 修改：使用完整 API 地址
+                    // ✅ 直接使用 common.js 中的 API_BASE
                     const response = await fetch(API_BASE + '/auth/change-password', {
                         method: 'POST',
                         headers: {
