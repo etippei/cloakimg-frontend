@@ -1,5 +1,5 @@
 // ============================================
-// 前端公共JS - 包含认证、API调用、使用统计----260809
+// 前端公共JS - 包含认证、API调用、使用统计
 // ============================================
 
 const API_BASE = 'https://cloakimg-api.etiplpl.workers.dev/api';
@@ -23,7 +23,6 @@ async function apiRequest(endpoint, options = {}) {
     
     const data = await response.json();
     if (!response.ok) {
-        // 将响应数据中的 code 一并抛出，方便前端判断
         const error = new Error(data.error || 'Request failed');
         error.code = data.code;
         error.status = response.status;
@@ -40,7 +39,6 @@ async function register(email, password) {
     });
 }
 
-// ---------- 修改后的登录函数 ----------
 async function login(email, password) {
     try {
         const result = await apiRequest('/auth/login', {
@@ -55,7 +53,6 @@ async function login(email, password) {
         }
         return { success: false, error: result.error, code: result.code };
     } catch (error) {
-        // 解析错误信息，判断是否为未验证
         if (error.code === 'EMAIL_NOT_VERIFIED' || 
             (error.message && error.message.includes('verify your email'))) {
             return { 
@@ -97,7 +94,6 @@ async function changePassword(currentPassword, newPassword) {
     });
 }
 
-// ---------- 重新发送验证邮件 ----------
 async function resendVerification(email) {
     try {
         const result = await apiRequest('/auth/resend-verification', {
@@ -110,7 +106,6 @@ async function resendVerification(email) {
     }
 }
 
-// ---------- 前端验证邮箱（新增） ----------
 async function verifyEmail(token) {
     try {
         const result = await apiRequest(`/auth/verify?token=${token}`, {
@@ -122,7 +117,6 @@ async function verifyEmail(token) {
     }
 }
 
-// ---------- 前端重置密码（新增） ----------
 async function handleResetPassword(token, newPassword) {
     return await apiRequest('/auth/reset-password', {
         method: 'POST',
@@ -380,7 +374,6 @@ function openAuthModal(mode) {
     `;
     document.body.appendChild(modal);
     
-    // 绑定密码可见切换事件
     const toggleBtn = modal.querySelector('.password-toggle');
     if (toggleBtn) {
         toggleBtn.addEventListener('click', function(e) {
@@ -398,7 +391,6 @@ function openAuthModal(mode) {
         openAuthModal(isLogin ? 'signup' : 'login');
     });
     
-    // ---------- 登录表单提交逻辑 ----------
     modal.querySelector('#authForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = modal.querySelector('#authEmail').value.trim();
@@ -406,7 +398,6 @@ function openAuthModal(mode) {
         const messageEl = modal.querySelector('#authMessage');
         const submitBtn = modal.querySelector('button[type="submit"]');
         
-        // 清空之前的消息
         messageEl.innerHTML = '';
         
         try {
@@ -515,7 +506,6 @@ function openAuthModal(mode) {
 // 处理 URL 参数（验证 + 重置密码）
 // ============================================
 
-// ---------- 处理邮箱验证 ----------
 async function handleEmailVerification(token) {
     const result = await verifyEmail(token);
     if (result.success) {
@@ -525,9 +515,7 @@ async function handleEmailVerification(token) {
     }
 }
 
-// ---------- 显示重置密码弹窗 ----------
 function showResetPasswordModal(token) {
-    // 如果已经存在弹窗，先移除
     const existing = document.querySelector('.reset-modal-overlay');
     if (existing) existing.remove();
 
@@ -582,26 +570,19 @@ function showResetPasswordModal(token) {
 
 // ---------- 页面加载检测 ----------
 document.addEventListener('DOMContentLoaded', function() {
-    // 渲染认证组件
     if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
         window.ForgeAuth.renderAuthWidget();
     }
 
-    // 检查 URL 参数
     const urlParams = new URLSearchParams(window.location.search);
     const action = urlParams.get('action');
     const token = urlParams.get('token');
 
-    // 处理邮箱验证
     if (action === 'verify' && token) {
         handleEmailVerification(token);
-    }
-    // 处理重置密码
-    else if (action === 'resetpwd' && token) {
+    } else if (action === 'resetpwd' && token) {
         showResetPasswordModal(token);
-    }
-    // 验证成功，弹出登录窗
-    else if (urlParams.get('verified') === '1') {
+    } else if (urlParams.get('verified') === '1') {
         setTimeout(() => {
             if (window.ForgeAuth && window.ForgeAuth.openAuthModal) {
                 window.ForgeAuth.openAuthModal('login');
