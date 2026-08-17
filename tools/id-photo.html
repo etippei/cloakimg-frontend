@@ -8,12 +8,12 @@
     <link rel="canonical" href="https://cloakimg.com/tools/id-photo.html">
 
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-05YWCDS3ND"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0D30F09HX"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-05YWCDS3ND');
+        gtag('config', 'G-K0D30F09HX');
     </script>
 
     <script type="application/ld+json">
@@ -444,7 +444,7 @@ processBtn.addEventListener('click', async () => {
     progressText.textContent = 'Submitting to AI server...';
 
     try {
-        const response = await window.ForgeAuth.uploadToVPS('/api/idphoto', originalFile, {
+        const response = await window.ForgeAuth.uploadToVPS('/idphoto', originalFile, {
             color: selectedColor,
             size: selectedSize
         });
