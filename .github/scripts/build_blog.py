@@ -173,7 +173,7 @@ def parse_issue(issue):
         'slug': slug,
         'content': clean_body,
         'excerpt': excerpt,
-        'category': category,  # ✅ 确保 category 字段存在
+        'category': category,
         'date': date_str,
         'display_date': display_date,
         'author': issue.get('user', {}).get('login', 'CloakImg AI'),
@@ -346,28 +346,34 @@ def generate_index_html(posts):
             with open(INDEX_FILE, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            import re
-            
-            # ✅ 修复：使用更精确的匹配方式
+            # ✅ 修复版：找到 blogGrid 的开始标签和结束标签
             start_marker = '<div class="blog-grid-full" id="blogGrid">'
+            # 用 RELATED TOOLS 注释作为结束锚点
             end_marker = '<!-- ===== RELATED TOOLS ===== -->'
             
             start_pos = content.find(start_marker)
             end_pos = content.find(end_marker, start_pos)
             
             if start_pos != -1 and end_pos != -1:
-                # 找到开始标记后面的位置
+                # 找到开始标签的结束位置
                 start_pos = start_pos + len(start_marker)
-                # 替换中间的内容
-                new_content = content[:start_pos] + '\n' + cards + '\n            ' + content[end_pos:]
+                
+                # ✅ 关键修复：在 cards 后面补上 </div>，闭合 blogGrid
+                #    同时保留 end_marker 及其后面的所有内容
+                new_content = (
+                    content[:start_pos]
+                    + '\n'
+                    + cards
+                    + '\n            </div>\n\n            '
+                    + content[end_pos:]
+                )
+                
                 with open(INDEX_FILE, 'w', encoding='utf-8') as f:
                     f.write(new_content)
                 print(f"✅ Updated {INDEX_FILE}")
             else:
-                # 如果标记找不到，写入完整的页面内容
-                print(f"⚠️ Could not find blog grid markers, rebuilding entire page...")
-                # 这里可以写一个完整的 fallback 模板
-                # 或者创建一个新的 blog.html 文件
+                print(f"⚠️ Could not find blog grid markers (start_pos={start_pos}, end_pos={end_pos})")
+                print(f"   Rebuilding entire blog.html from scratch...")
                 rebuild_complete_blog_html(sorted_posts)
         else:
             print(f"⚠️ {INDEX_FILE} not found! Creating new file...")
@@ -375,6 +381,8 @@ def generate_index_html(posts):
             
     except Exception as e:
         print(f"❌ Error updating index: {e}")
+        import traceback
+        traceback.print_exc()
 
 
 def rebuild_complete_blog_html(posts):
@@ -396,7 +404,6 @@ def rebuild_complete_blog_html(posts):
                 </div>
 '''
     
-    # 基础 blog.html 模板
     blog_html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -409,12 +416,58 @@ def rebuild_complete_blog_html(posts):
 </head>
 <body>
 <div class="app-container">
-    <header class="site-header">...</header>
-    <div class="blog-hero">...</div>
+    <header class="site-header">
+        <div class="logo">
+            <h1>CloakImg <span>AI</span></h1>
+            <span>Professional AI Image Toolkit</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">🏠 Home</a>
+            <a href="blog.html" class="nav-link active">📝 Blog</a>
+            <a href="tools.html" class="nav-link">🛠️ Tools</a>
+            <a href="help.html" class="nav-link">❓ Help</a>
+            <a href="pricing.html" class="nav-link">💰 Pricing</a>
+            <a href="account.html" class="nav-link">👤 Account</a>
+        </div>
+        <div class="auth-area" id="authWidget"></div>
+    </header>
+
+    <div class="blog-hero">
+        <h1>📝 CloakImg AI Blog</h1>
+        <p>Tips, tutorials & news about AI image processing — updated weekly</p>
+    </div>
+
     <div class="blog-grid-full" id="blogGrid">
 {cards}
     </div>
-    <footer>...</footer>
+
+    <div class="related-tools">
+        <h3><i class="fas fa-link" style="color:#2563eb;"></i> Try Our AI Tools</h3>
+        <div class="related-tools-grid">
+            <a href="tools/id-photo.html">🪪 ID Photo Maker</a>
+            <a href="tools/upscaler.html">✨ AI Upscaler</a>
+            <a href="tools/bg-remover.html">🎨 BG Remover</a>
+            <a href="tools/compressor.html">🗜️ Compressor</a>
+            <a href="tools/convert.html">🔄 PNG to JPG</a>
+            <a href="pricing.html">💰 Upgrade to Pro</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left"><i class="fas fa-microchip"></i> CloakImg AI — 100% Local Processing</div>
+            <div class="footer-right">
+                <a href="pricing.html">Pricing</a>
+                <a href="privacy-policy.html">Privacy</a>
+                <a href="terms-of-service.html">Terms</a>
+                <a href="cookie-policy.html">Cookies</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="blog.html">Blog</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 CloakImg AI. All rights reserved.</div>
+    </footer>
 </div>
 <script src="common.js"></script>
 </body>
@@ -434,7 +487,7 @@ def generate_posts_json(posts):
         posts_data.append({
             'slug': p['slug'],
             'title': p['title'],
-            'category': p['category'],  # ✅ 安全访问，p['category'] 一定存在
+            'category': p['category'],
             'date': p['date'],
             'display_date': p['display_date'],
             'excerpt': p['excerpt'],
