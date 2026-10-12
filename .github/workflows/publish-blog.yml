@@ -2,7 +2,7 @@ name: Publish Blog from Issues
 
 on:
   issues:
-    types: [labeled, opened, edited, closed]
+    types: [labeled, edited]
   workflow_dispatch:
 
 permissions:
@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # ✅ 获取完整历史，避免冲突
+          fetch-depth: 0  # 获取完整历史，避免冲突
       
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -42,14 +42,15 @@ jobs:
           # 拉取远程最新代码
           git pull origin main --rebase --autostash
           
-          # 添加变更
-          git add blog.html blog/posts/ blog/posts.json 2>/dev/null || true
+          # 添加所有变更（包括时间戳文件）
+          git add -A
           
           # 如果有变更则提交
           if git diff --staged --quiet; then
             echo "📭 No changes to commit"
           else
-            git commit -m "chore: auto-update blog from issues [skip ci]"
+            # ✅ 去掉 [skip ci]，让 Cloudflare Pages 能自动部署
+            git commit -m "chore: auto-update blog from issues"
             git push origin main
             echo "✅ Changes pushed successfully"
           fi
