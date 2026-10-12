@@ -49,11 +49,13 @@ BLOG_DIR = Path('blog')
 POSTS_DIR = BLOG_DIR / 'posts'
 INDEX_FILE = Path('blog.html')
 POSTS_JSON = BLOG_DIR / 'posts.json'
+BUILD_STAMP = BLOG_DIR / '.build-timestamp'   # ✅ 新增：时间戳文件，用来强制 Cloudflare 重新部署
 
 print(f"BLOG_DIR: {BLOG_DIR}")
 print(f"POSTS_DIR: {POSTS_DIR}")
 print(f"INDEX_FILE: {INDEX_FILE}")
 print(f"POSTS_JSON: {POSTS_JSON}")
+print(f"BUILD_STAMP: {BUILD_STAMP}")
 
 # 创建目录
 BLOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -327,7 +329,7 @@ def generate_index_html(posts):
     cards = ''
     for p in sorted_posts[:20]:
         cards += f'''
-                <div class="blog-card-full">
+                <div class="blog-card-full" data-title="{html.escape(p['title'].lower())}" data-category="{html.escape(p['category'])}">
                     <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
                     <div class="blog-content">
                         <div class="blog-category">{html.escape(p['category'])}</div>
@@ -346,20 +348,16 @@ def generate_index_html(posts):
             with open(INDEX_FILE, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            # ✅ 修复版：找到 blogGrid 的开始标签和结束标签
+            # ✅ 找到 blogGrid 的开始标签和结束锚点
             start_marker = '<div class="blog-grid-full" id="blogGrid">'
-            # 用 RELATED TOOLS 注释作为结束锚点
             end_marker = '<!-- ===== RELATED TOOLS ===== -->'
             
             start_pos = content.find(start_marker)
             end_pos = content.find(end_marker, start_pos)
             
             if start_pos != -1 and end_pos != -1:
-                # 找到开始标签的结束位置
                 start_pos = start_pos + len(start_marker)
-                
-                # ✅ 关键修复：在 cards 后面补上 </div>，闭合 blogGrid
-                #    同时保留 end_marker 及其后面的所有内容
+                # ✅ 在 cards 后面补上 </div>，闭合 blogGrid
                 new_content = (
                     content[:start_pos]
                     + '\n'
@@ -390,7 +388,7 @@ def rebuild_complete_blog_html(posts):
     cards = ''
     for p in posts[:20]:
         cards += f'''
-                <div class="blog-card-full">
+                <div class="blog-card-full" data-title="{html.escape(p['title'].lower())}" data-category="{html.escape(p['category'])}">
                     <div class="blog-image-icon"><i class="fas fa-file-alt"></i></div>
                     <div class="blog-content">
                         <div class="blog-category">{html.escape(p['category'])}</div>
@@ -500,6 +498,19 @@ def generate_posts_json(posts):
     print(f"✅ Generated posts.json with {len(posts_data)} posts")
 
 
+def write_build_timestamp():
+    """
+    ✅ 新增：写一个时间戳文件，强制 Cloudflare Pages 检测到文件变化并触发部署。
+    因为 [skip ci] 可能导致 Cloudflare 跳过部署，写个文件能确保有"新变化"。
+    """
+    try:
+        with open(BUILD_STAMP, 'w', encoding='utf-8') as f:
+            f.write(datetime.now().isoformat())
+        print(f"✅ Wrote build timestamp: {BUILD_STAMP}")
+    except Exception as e:
+        print(f"⚠️ Failed to write build timestamp: {e}")
+
+
 def main():
     print("🚀 Building blog from GitHub Issues...")
     
@@ -541,6 +552,7 @@ def main():
     
     generate_index_html(posts)
     generate_posts_json(posts)
+    write_build_timestamp()   # ✅ 新增
     
     print(f"🎉 Build complete! {len(posts)} posts generated.")
 
