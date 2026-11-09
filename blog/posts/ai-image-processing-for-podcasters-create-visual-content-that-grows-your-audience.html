@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Processing for Podcasters: Create Visual Content That Grows Your Audience - CloakImg AI Blog</title>
+    <meta name="description" content="AI Image Processing for Podcasters: Create Visual Content That Grows Your Audience 2026
+
+Podcasting is an audio medium, but visuals play a surprising...">
+    <link rel="canonical" href="https://cloakimg.com/blog/posts/ai-image-processing-for-podcasters-create-visual-content-that-grows-your-audience.html">
+    <link rel="stylesheet" href="../../common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .nav-link { font-size: 1.15rem !important; font-weight: 600 !important; padding: 0.7rem 1.4rem !important; }
+        @media (max-width: 768px) { .nav-link { font-size: 0.95rem !important; padding: 0.4rem 0.8rem !important; } }
+        @media (max-width: 480px) { .nav-link { font-size: 0.8rem !important; padding: 0.3rem 0.6rem !important; } }
+        .post-container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+        .post-hero { background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 50%, #ede9fe 100%); border-radius: 2rem; padding: 2.5rem 2rem; margin-bottom: 2rem; text-align: center; }
+        .post-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .post-hero .meta { color: #475569; font-size: 0.95rem; }
+        .post-hero .meta i { margin: 0 4px; }
+        .post-hero .category { display: inline-block; background: #eef2ff; color: #2563eb; padding: 0.2rem 1rem; border-radius: 30px; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.8rem; }
+        .post-body { background: white; border-radius: 2rem; padding: 2.5rem; border: 1px solid #e2e8f0; }
+        .post-body h2 { font-size: 1.5rem; font-weight: 700; margin-top: 1.8rem; margin-bottom: 0.8rem; }
+        .post-body h3 { font-size: 1.2rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .post-body p { color: #334155; line-height: 1.8; margin-bottom: 1rem; }
+        .post-body ul, .post-body ol { padding-left: 1.5rem; color: #334155; line-height: 1.8; margin-bottom: 1rem; }
+        .post-body code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.9rem; }
+        .post-body pre { background: #f1f5f9; padding: 1rem; border-radius: 12px; overflow-x: auto; font-size: 0.9rem; margin-bottom: 1rem; }
+        .post-body blockquote { border-left: 4px solid #2563eb; padding-left: 1rem; color: #475569; margin: 1rem 0; }
+        .post-body img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
+        .post-back { display: inline-block; margin-top: 2rem; color: #2563eb; text-decoration: none; font-weight: 500; }
+        .post-back:hover { text-decoration: underline; }
+        .related-tools { margin: 2rem 0; padding: 1.5rem; background: #f8fafc; border-radius: 1.5rem; border: 1px solid #e2e8f0; }
+        .related-tools h3 { text-align: center; margin-bottom: 1.2rem; font-size: 1.1rem; }
+        .related-tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; text-align: center; }
+        .related-tools-grid a { color: #2563eb; text-decoration: none; font-size: 0.85rem; padding: 0.5rem; border-radius: 8px; background: white; border: 1px solid #e2e8f0; transition: all 0.2s; }
+        .related-tools-grid a:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-2px); }
+        footer { background: linear-gradient(180deg, #f8fafc, #f1f5f9); border-top: 1px solid #e2e8f0; margin-top: 2rem; padding: 1.5rem 0; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; max-width: 1400px; margin: 0 auto; padding: 0 0.5rem; }
+        .footer-right { display: flex; gap: 1.5rem; }
+        .footer-right a { color: #475569; text-decoration: none; font-size: 0.85rem; }
+        .footer-right a:hover { color: #2563eb; }
+        .footer-bottom { text-align: center; font-size: 0.75rem; color: #94a3b8; padding-top: 1rem; margin-top: 1rem; border-top: 1px solid #f1f5f9; }
+        @media (max-width: 768px) { .post-hero h1 { font-size: 1.8rem; } .post-body { padding: 1.5rem; } .footer-content { flex-direction: column; text-align: center; } .footer-right { flex-wrap: wrap; justify-content: center; } }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="site-header">
+        <div class="logo"><h1>CloakImg <span>AI</span></h1><span>Professional AI Image Toolkit</span></div>
+        <div class="nav-links">
+            <a href="../../index.html" class="nav-link">🏠 Home</a>
+            <a href="../../blog.html" class="nav-link active">📝 Blog</a>
+            <a href="../../tools.html" class="nav-link">🛠️ Tools</a>
+            <a href="../../help.html" class="nav-link">❓ Help</a>
+            <a href="../../pricing.html" class="nav-link">💰 Pricing</a>
+            <a href="../../account.html" class="nav-link">👤 Account</a>
+        </div>
+        <div class="auth-area" id="authWidget"></div>
+    </header>
+
+    <div class="post-container">
+        <div class="post-hero">
+            <div class="category">Tutorial</div>
+            <h1>AI Image Processing for Podcasters: Create Visual Content That Grows Your Audience</h1>
+            <div class="meta">
+                <i class="far fa-calendar"></i> November 09, 2026
+            </div>
+        </div>
+
+        <div class="post-body">
+            <h1 id="ai-image-processing-for-podcasters-create-visual-content-that-grows-your-audience-2026">AI Image Processing for Podcasters: Create Visual Content That Grows Your Audience (2026)</h1>
+<p>Podcasting is an audio medium, but visuals play a surprisingly critical role in its success. Before anyone presses play, they see your podcast cover art in their app. Before they follow your social media account, they see your episode graphics. Before they subscribe on YouTube, they see your thumbnails. AI image processing has become an essential tool for podcasters who want to create professional visuals that attract listeners and grow their audience—without hiring a design team.</p>
+<h2 id="why-visuals-matter-in-podcasting">Why Visuals Matter in Podcasting</h2>
+<h3 id="the-visual-discovery-problem">The Visual Discovery Problem</h3>
+<p>Podcasts are consumed through visual interfaces. Listeners browse directories, scroll through social feeds, and browse YouTube channels—all of which are driven by images.</p>
+<table>
+<thead>
+<tr>
+<th>Statistic</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Podcasts with professional cover art get 3x more clicks</td>
+<td>Visuals drive discovery</td>
+</tr>
+<tr>
+<td>90% of listeners say cover art influences their choice</td>
+<td>Visuals impact downloads</td>
+</tr>
+<tr>
+<td>Episode graphics increase social media engagement by 80%</td>
+<td>Visuals boost promotion</td>
+</tr>
+<tr>
+<td>YouTube is now the second-largest podcast platform</td>
+<td>Visual thumbnails matter for video podcasts</td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-great-podcast-visuals-do">What Great Podcast Visuals Do</h3>
+<ul>
+<li><strong>Stand out in directories</strong> — Apple Podcasts, Spotify, and others are crowded</li>
+<li><strong>Communicate your show's identity</strong> — Genre, tone, and target audience</li>
+<li><strong>Build brand recognition</strong> — Consistent visuals make you memorable</li>
+<li><strong>Drive social media engagement</strong> — Eye-catching graphics get shares</li>
+<li><strong>Attract YouTube viewers</strong> — Video podcast thumbnails are critical</li>
+</ul>
+<h2 id="the-podcasters-visual-challenges">The Podcaster's Visual Challenges</h2>
+<h3 id="1-limited-budget">1. Limited Budget</h3>
+<p>Most independent podcasters operate with minimal budgets. Professional design services are often out of reach.</p>
+<h3 id="2-limited-time">2. Limited Time</h3>
+<p>Podcasters spend time on recording, editing, and promoting. There's little time left for visual content creation.</p>
+<h3 id="3-limited-technical-skills">3. Limited Technical Skills</h3>
+<p>Not every podcaster is a graphic designer. Professional design software has a steep learning curve.</p>
+<h3 id="4-high-volume">4. High Volume</h3>
+<p>Successful podcasters produce:
+- Weekly episodes (cover art per episode)
+- Social media graphics (multiple per episode)
+- YouTube thumbnails (for video podcasts)
+- Promotional materials (clips, quotes, announcements)</p>
+<h2 id="how-ai-image-processing-helps-podcasters">How AI Image Processing Helps Podcasters</h2>
+<h3 id="1-background-removal-for-clean-cover-art">1. Background Removal for Clean Cover Art</h3>
+<p><strong>The challenge:</strong> Creating professional cover art with a clean, consistent background.</p>
+<p><strong>The AI solution:</strong> AI background removal isolates your subject—whether that's a photo of you, your co-host, or a graphic element—allowing you to place it on any background.</p>
+<p><strong>Use cases:</strong>
+- Clean cover art with solid or gradient backgrounds
+- Isolated host photos for branding
+- Episode graphics with consistent style
+- YouTube thumbnails with transparent subjects</p>
+<h3 id="2-ai-upscaling-for-high-resolution-cover-art">2. AI Upscaling for High-Resolution Cover Art</h3>
+<p><strong>The challenge:</strong> Apple Podcasts requires cover art at a minimum of 1400x1400 pixels, ideally 3000x3000.</p>
+<p><strong>The AI solution:</strong> AI upscaling adds realistic detail, making it easy to meet directory requirements without re-shooting or re-designing.</p>
+<p><strong>Use cases:</strong>
+- Meeting Apple Podcasts' 3000x3000 requirement
+- Preparing art for Spotify and other directories
+- Creating high-resolution episode graphics
+- Preparing images for merchandise</p>
+<h3 id="3-image-compression-for-fast-uploads">3. Image Compression for Fast Uploads</h3>
+<p><strong>The challenge:</strong> High-resolution cover art can be slow to upload and may exceed platform limits.</p>
+<p><strong>The AI solution:</strong> AI compression reduces file sizes by 70-80% without visible quality loss.</p>
+<p><strong>Use cases:</strong>
+- Fast uploads to podcast hosting platforms
+- Efficient social media sharing
+- Quick episode announcements
+- Reduced bandwidth costs</p>
+<h3 id="4-image-resizing-for-every-platform">4. Image Resizing for Every Platform</h3>
+<p><strong>The challenge:</strong> Different platforms require different image dimensions.</p>
+<p><strong>The AI solution:</strong> AI resizing adapts images for every platform.</p>
+<p><strong>Use cases:</strong>
+- Podcast directories (square cover art)
+- Social media (platform-specific sizes)
+- YouTube thumbnails (1280x720)
+- Website graphics</p>
+<h3 id="5-format-conversion">5. Format Conversion</h3>
+<p><strong>The challenge:</strong> Different platforms and uses require different file formats.</p>
+<p><strong>The AI solution:</strong> Convert PNG to JPG for smaller files, or keep PNG for transparency.</p>
+<p><strong>Use cases:</strong>
+- Preparing images for various platforms
+- Optimizing file sizes
+- Ensuring compatibility</p>
+<h2 id="the-podcasters-ai-visual-workflow">The Podcaster's AI Visual Workflow</h2>
+<h3 id="step-1-capture-or-create-source-images">Step 1: Capture or Create Source Images</h3>
+<p><strong>For cover art:</strong>
+- Take professional photos of hosts
+- Create or source graphic elements
+- Use a simple background for easy removal
+- Capture multiple shots to choose from</p>
+<p><strong>For episode graphics:</strong>
+- Capture key moments from recordings
+- Create quote graphics
+- Use episode-specific artwork</p>
+<h3 id="step-2-remove-and-replace-backgrounds">Step 2: Remove and Replace Backgrounds</h3>
+<p>Use <strong>CloakImg AI's Background Remover</strong> to:</p>
+<ul>
+<li>Isolate hosts for cover art</li>
+<li>Remove distracting backgrounds</li>
+<li>Prepare images for composite graphics</li>
+<li>Create consistent branding across episodes</li>
+</ul>
+<h3 id="step-3-upscale-for-quality">Step 3: Upscale for Quality</h3>
+<table>
+<thead>
+<tr>
+<th>Use Case</th>
+<th>AI Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cover art</td>
+<td>Upscale to 3000x3000 for Apple Podcasts</td>
+</tr>
+<tr>
+<td>Episode graphics</td>
+<td>Upscale for social media clarity</td>
+</tr>
+<tr>
+<td>YouTube thumbnails</td>
+<td>Upscale for high-resolution display</td>
+</tr>
+<tr>
+<td>Merchandise designs</td>
+<td>Upscale for print quality</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-4-resize-for-platforms">Step 4: Resize for Platforms</h3>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Recommended Size</th>
+<th>AI Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apple Podcasts Cover Art</td>
+<td>3000 x 3000 px</td>
+<td>Resize, upscale</td>
+</tr>
+<tr>
+<td>Spotify Cover Art</td>
+<td>640 x 640 px (minimum)</td>
+<td>Resize</td>
+</tr>
+<tr>
+<td>YouTube Thumbnail</td>
+<td>1280 x 720 px</td>
+<td>Resize, compress</td>
+</tr>
+<tr>
+<td>Instagram Post</td>
+<td>1080 x 1080 px</td>
+<td>Resize, compress</td>
+</tr>
+<tr>
+<td>Instagram Story</td>
+<td>1080 x 1920 px</td>
+<td>Resize, compress</td>
+</tr>
+<tr>
+<td>Facebook Post</td>
+<td>1200 x 630 px</td>
+<td>Resize, compress</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-5-create-consistent-branding">Step 5: Create Consistent Branding</h3>
+<p>Use batch processing to apply the same settings across all your visual assets, creating a consistent, recognizable brand.</p>
+<h2 id="podcast-specific-ai-applications">Podcast-Specific AI Applications</h2>
+<h3 id="1-podcast-cover-art">1. Podcast Cover Art</h3>
+<table>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>AI Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cluttered backgrounds</td>
+<td>Background removal</td>
+</tr>
+<tr>
+<td>Low resolution</td>
+<td>AI upscaling to 3000x3000</td>
+</tr>
+<tr>
+<td>Wrong dimensions</td>
+<td>Resizing to square (1:1)</td>
+</tr>
+<tr>
+<td>Large file sizes</td>
+<td>Compression</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-episode-graphics">2. Episode Graphics</h3>
+<table>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>AI Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inconsistent style</td>
+<td>Batch processing</td>
+</tr>
+<tr>
+<td>Poor quality images</td>
+<td>AI enhancement</td>
+</tr>
+<tr>
+<td>Wrong dimensions</td>
+<td>Resizing</td>
+</tr>
+<tr>
+<td>Large files</td>
+<td>Compression</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-youtube-thumbnails">3. YouTube Thumbnails</h3>
+<table>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>AI Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cluttered backgrounds</td>
+<td>Background removal</td>
+</tr>
+<tr>
+<td>Low resolution</td>
+<td>AI upscaling to 1280x720</td>
+</tr>
+<tr>
+<td>Wrong dimensions</td>
+<td>Resizing</td>
+</tr>
+<tr>
+<td>Large file sizes</td>
+<td>Compression under 2MB</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-social-media-promotion">4. Social Media Promotion</h3>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>AI Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instagram</td>
+<td>Resize to 1080x1080, compress</td>
+</tr>
+<tr>
+<td>Instagram Stories</td>
+<td>Resize to 1080x1920</td>
+</tr>
+<tr>
+<td>Facebook</td>
+<td>Resize to 1200x630</td>
+</tr>
+<tr>
+<td>LinkedIn</td>
+<td>Resize to 1200x627</td>
+</tr>
+<tr>
+<td>Twitter/X</td>
+<td>Resize to 1200x675</td>
+</tr>
+</tbody>
+</table>
+<h2 id="before-and-after-ai-for-podcasters">Before and After: AI for Podcasters</h2>
+<h3 id="scenario-1-the-cluttered-cover-art">Scenario 1: The Cluttered Cover Art</h3>
+<p><strong>Before:</strong> A podcast cover with a busy background that distracts from the host and title.</p>
+<p><strong>After AI background removal:</strong> The host is isolated on a clean, bold background with space for the podcast title, creating professional cover art.</p>
+<h3 id="scenario-2-the-low-resolution-graphic">Scenario 2: The Low-Resolution Graphic</h3>
+<p><strong>Before:</strong> An episode graphic that looks blurry when displayed large on social media.</p>
+<p><strong>After AI upscaling:</strong> A high-resolution image that looks crisp and professional on any platform.</p>
+<h3 id="scenario-3-the-inconsistent-feed">Scenario 3: The Inconsistent Feed</h3>
+<p><strong>Before:</strong> Episode graphics with different styles, backgrounds, and dimensions, creating an unprofessional podcast feed.</p>
+<p><strong>After AI batch processing:</strong> All episode graphics have a consistent style, making your podcast look polished and professional.</p>
+<h2 id="time-savings-for-podcasters">Time Savings for Podcasters</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Traditional Method</th>
+<th>AI-Powered Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cover art processing</td>
+<td>30-60 minutes</td>
+<td>2 minutes</td>
+</tr>
+<tr>
+<td>Episode graphics (5)</td>
+<td>1-2 hours</td>
+<td>3 minutes</td>
+</tr>
+<tr>
+<td>YouTube thumbnails (5)</td>
+<td>1-2 hours</td>
+<td>2 minutes</td>
+</tr>
+<tr>
+<td>Social media versions (10)</td>
+<td>30-60 minutes</td>
+<td>1 minute</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>3-5 hours</strong></td>
+<td><strong>Under 10 minutes</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="best-practices-for-podcasters">Best Practices for Podcasters</h2>
+<h3 id="1-create-a-strong-cover-art">1. Create a Strong Cover Art</h3>
+<p>Your cover art is your podcast's handshake. It should:
+- Stand out in a crowded directory
+- Be readable at small sizes
+- Communicate your show's genre and tone
+- Include your podcast name</p>
+<h3 id="2-maintain-consistency">2. Maintain Consistency</h3>
+<p>Use the same processing settings across all your visuals to create a recognizable brand identity.</p>
+<h3 id="3-optimize-for-every-platform">3. Optimize for Every Platform</h3>
+<p>Different platforms have different requirements. Use AI resizing and compression to adapt your visuals.</p>
+<h3 id="4-create-templates">4. Create Templates</h3>
+<p>Design templates for:
+- Episode cover art
+- Social media graphics
+- YouTube thumbnails
+- Quote cards</p>
+<h3 id="5-keep-originals">5. Keep Originals</h3>
+<p>Always keep your original images. You may want to reprocess them differently later.</p>
+<h2 id="common-mistakes-to-avoid">Common Mistakes to Avoid</h2>
+<table>
+<thead>
+<tr>
+<th>Mistake</th>
+<th>Why It Hurts</th>
+<th>AI Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cluttered cover art</td>
+<td>Can't read the title</td>
+<td>Background removal</td>
+</tr>
+<tr>
+<td>Low resolution</td>
+<td>Blurry, unprofessional</td>
+<td>AI upscaling</td>
+</tr>
+<tr>
+<td>Wrong dimensions</td>
+<td>Poor platform display</td>
+<td>AI resizing</td>
+</tr>
+<tr>
+<td>Large file sizes</td>
+<td>Slow uploads</td>
+<td>AI compression</td>
+</tr>
+<tr>
+<td>Inconsistent style</td>
+<td>Weak brand identity</td>
+<td>Batch processing</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tools-for-podcasters">Tools for Podcasters</h2>
+<h3 id="cloakimg-ai-for-podcast-professionals">CloakImg AI for Podcast Professionals</h3>
+<p><strong>CloakImg AI</strong> offers a complete toolkit:</p>
+<ul>
+<li><strong>AI Upscaler</strong> — High-resolution cover art and graphics</li>
+<li><strong>Background Remover</strong> — Clean cover art and thumbnails</li>
+<li><strong>Compressor</strong> — Fast uploads and efficient storage</li>
+<li><strong>Resizer</strong> — Perfect dimensions for every platform</li>
+<li><strong>PNG to JPG Converter</strong> — Format flexibility</li>
+<li><strong>ID Photo Maker</strong> — Host profile photos</li>
+</ul>
+<p><strong>Key benefits for podcasters:</strong>
+- 100% local processing — Unreleased content stays private
+- Batch processing — Handle multiple episodes efficiently
+- No file size limits — Process any image
+- Free tier available — 3 uses per day</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>AI image processing has leveled the playing field for podcasters. You no longer need a design team or expensive software to create professional visuals. With AI tools, you can transform ordinary images into stunning cover art, episode graphics, and social media visuals that attract listeners and grow your audience.</p>
+<p>With <strong>CloakImg AI</strong>, you have a complete toolkit for your podcast—all processing locally on your device. Start creating better visuals today.</p>
+<hr />
+<p><strong>Create Stunning Podcast Visuals with CloakImg AI:</strong> <a href="https://cloakimg.com/tools/bg-remover">https://cloakimg.com/tools/bg-remover</a></p>
+            <a href="../../blog.html" class="post-back">← Back to Blog</a>
+        </div>
+
+        <div class="related-tools">
+            <h3><i class="fas fa-link" style="color:#2563eb;"></i> Try Our AI Tools</h3>
+            <div class="related-tools-grid">
+                <a href="../../tools/id-photo.html">🪪 ID Photo Maker</a>
+                <a href="../../tools/upscaler.html">✨ AI Upscaler</a>
+                <a href="../../tools/bg-remover.html">🎨 BG Remover</a>
+                <a href="../../tools/compressor.html">🗜️ Compressor</a>
+                <a href="../../tools/convert.html">🔄 PNG to JPG</a>
+                <a href="../../pricing.html">💰 Upgrade to Pro</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left"><i class="fas fa-microchip"></i> CloakImg AI — 100% Local Processing</div>
+            <div class="footer-right">
+                <a href="../../pricing.html">Pricing</a>
+                <a href="../../privacy-policy.html">Privacy</a>
+                <a href="../../terms-of-service.html">Terms</a>
+                <a href="../../cookie-policy.html">Cookies</a>
+                <a href="../../about.html">About</a>
+                <a href="../../contact.html">Contact</a>
+                <a href="../../blog.html">Blog</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 CloakImg AI. All rights reserved.</div>
+    </footer>
+</div>
+<script src="../../common.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.ForgeAuth !== 'undefined' && window.ForgeAuth.renderAuthWidget) {
+            window.ForgeAuth.renderAuthWidget();
+        }
+    });
+</script>
+</body>
+</html>
